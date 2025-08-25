@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning Result</title>
+    <!-- Tailwind CSS CDN을 포함하여 스타일링을 적용합니다. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        /* 로딩 오버레이를 위한 스타일 */
+        #loading-overlay {
+            display: none; /* 초기에는 숨겨둡니다. */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            flex-direction: column;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #loading-overlay.visible {
+            opacity: 1;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <!-- 로딩 오버레이 HTML -->
+    <div id="loading-overlay">
+        <div class="spinner mb-4"></div>
+        <div class="text-xl font-medium">예측을 진행 중입니다...</div>
+    </div>
+
+    <!-- 메인 컨테이너 -->
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full transform transition-all hover:shadow-2xl">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Deep Learning Result</h1>
+        <div id="map" class="w-full h-80 bg-gray-200 rounded-lg shadow-inner mb-6">
+            <!-- 지도가 여기에 렌더링될 예정입니다. -->
+        </div>
+
+        <div class="flex justify-center">
+            <button
+                onclick="predictStart()"
+                class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            >
+                예측 시작
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * '예측 시작' 버튼을 눌렀을 때 실행되는 함수입니다.
+         * 실제 예측 프로세스를 트리거하고 로딩 화면을 표시합니다.
+         */
+        function predictStart() {
+            console.log("예측 시작 버튼 클릭됨.");
+            // 로딩 화면을 표시합니다.
+            showLoading();
+
+            // 여기에 실제 딥러닝 모델 예측을 위한 코드가 들어갈 것입니다.
+            // 예를 들어, Flask 서버로 데이터를 보내는 fetch API 호출 등
+            
+            // 예측이 완료된 후 로딩 화면을 숨기는 함수를 호출합니다.
+            // (임시로 3초 후 로딩 화면을 숨기도록 설정)
+            setTimeout(() => {
+                hideLoading();
+            }, 3000);
+        }
+
+        /**
+         * 로딩 화면 오버레이를 보이게 하는 함수입니다.
+         * alert() 대신 동일 페이지에서 부드러운 전환 효과를 제공합니다.
+         */
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex';
+            // CSS transition을 위해 클래스를 추가합니다.
+            setTimeout(() => loadingOverlay.classList.add('visible'), 10);
+        }
+
+        /**
+         * 로딩 화면 오버레이를 숨기는 함수입니다.
+         */
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.classList.remove('visible');
+            // transition이 끝난 후 완전히 숨깁니다.
+            setTimeout(() => loadingOverlay.style.display = 'none', 300);
+        }
+    </script>
+</body>
+</html>

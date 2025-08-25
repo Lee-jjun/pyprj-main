@@ -1,0 +1,23 @@
+{% extends 'bbs/base.html' %}
+{% load static %}
+
+{% block title %}부동산 전/월세 예측 서비스{% endblock %}
+
+{% block navigation %}
+{% endblock %}
+
+{% block content %}
+<!-- 메인 컨테이너 -->
+<div class="main-container">
+  <h1 class="main-title">🏠 부동산 전/월세 예측 서비스</h1>
+  <p class="main-subtitle">
+      최신 데이터와 머신러닝 모델을 활용한 <strong>전/월세 예측 플랫폼</strong>입니다.
+  </p>
+
+  <!-- 버튼 1개만 -->
+  <div class="main-links-container vertical-buttons">
+      <a href="{% url 'bbs:price_range_forecast' %}" class="main-link">🔮 예측하기</a>
+  </div>
+</div>
+
+{% endblock %}

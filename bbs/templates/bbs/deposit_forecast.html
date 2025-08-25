@@ -1,0 +1,128 @@
+{% extends 'bbs/base.html' %}
+{% load static %}
+
+{% block title %}전세/월세 예측{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-8 bg-white shadow-xl rounded-xl max-w-4xl mt-10">
+    <h1 class="text-3xl font-bold text-center text-blue-600 mb-8">전세/월세 예측</h1>
+    <p class="text-center text-gray-700 mb-6">
+        전세금 또는 월세금을 입력하면, 해당 조건에 맞는 예상 시세 및 특징을 분석해줍니다.
+    </p>
+
+    <!-- 예측 입력 폼 -->
+    <div class="bg-blue-50 p-6 rounded-lg shadow-inner mb-8">
+        <h2 class="text-xl font-semibold text-blue-800 mb-4">예측 조건 입력</h2>
+        <form id="deposit-forecast-form" method="post" action="{% url 'bbs:deposit_forecast' %}">
+            {% csrf_token %}
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="deposit" class="block text-gray-700 font-medium mb-1">전세금 (만원):</label>
+                    <input type="number" id="deposit" name="deposit" required
+                           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                           placeholder="예: 50000">
+                </div>
+                <div class="flex-1">
+                    <label for="monthly" class="block text-gray-700 font-medium mb-1">월세금 (만원):</label>
+                    <input type="number" id="monthly" name="monthly" required
+                           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                           placeholder="예: 150">
+                </div>
+            </div>
+            <button type="submit" onclick="showLoading()" class="mt-6 w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition-colors">
+                예측하기
+            </button>
+        </form>
+    </div>
+
+    <!-- 예측 결과 -->
+    <div id="forecast-results" class="hidden">
+        <h2 class="text-xl font-semibold text-blue-800 mb-4">예측 결과 분석</h2>
+        <div class="bg-gray-100 p-6 rounded-lg shadow-inner">
+            <canvas id="depositChart"></canvas>
+        </div>
+        <div class="mt-4 p-4 text-center bg-blue-100 text-blue-800 rounded-lg">
+            <p><strong>예측된 총 임대 비용:</strong> <span id="predicted-total" class="text-2xl font-bold"></span>만원</p>
+        </div>
+        <div class="mt-4 p-4 bg-gray-50 border rounded-lg">
+            <p id="result-text" class="text-gray-800"></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 로딩 오버레이 제거
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.remove('visible');
+        }
+    });
+
+    // 폼 제출 이벤트 처리
+    document.getElementById('deposit-forecast-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const deposit = parseInt(formData.get('deposit'));
+        const monthly = parseInt(formData.get('monthly'));
+        const totalCost = deposit + (monthly * 24); // 임의로 2년 기준 총 임대 비용 계산
+
+        const resultsDiv = document.getElementById('forecast-results');
+        const resultText = document.getElementById('result-text');
+        const predictedTotalElement = document.getElementById('predicted-total');
+
+        // 예시 데이터 (실제는 서버 응답으로 대체)
+        const data = {
+            labels: ['전세금', '월세(2년 환산)', '총 임대비용'],
+            datasets: [{
+                label: '예상 비용 (만원)',
+                data: [deposit, monthly * 24, totalCost],
+                backgroundColor: ['#60a5fa', '#3b82f6', '#1d4ed8']
+            }]
+        };
+
+        renderChart(data);
+
+        predictedTotalElement.textContent = totalCost.toLocaleString();
+        resultText.innerHTML = `
+            입력하신 <strong>전세금 ${deposit}만원</strong> + 
+            <strong>월세 ${monthly}만원</strong> 조건의 예상 총 임대 비용은
+            <strong>${totalCost}만원</strong> (2년 기준)입니다.<br>
+            특징: 안정적인 보증금 + 합리적인 월세 구조 → 도심형 소형 아파트 가능성 ↑
+        `;
+        resultsDiv.classList.remove('hidden');
+    });
+
+    // 차트 렌더링 함수
+    function renderChart(data) {
+        const ctx = document.getElementById('depositChart').getContext('2d');
+
+        if (window.depositChartInstance) {
+            window.depositChartInstance.destroy();
+        }
+
+        window.depositChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: '전세/월세 조합별 비용 분석' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '금액 (만원)' }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

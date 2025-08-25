@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Django
+db.sqlite3
+*.pot
+*.pyc
+
+# VSCode 등 IDE 관련
+.vscode/
+.idea/
+
+# 환경 변수나 설정
+.env
+*.env
+
+# OS 관련
+.DS_Store
+
+# Migrations (원하면 제외 가능)
+*/migrations/__pycache__/
+*/migrations/*.pyc
+*/migrations/*.py
+!*/migrations/__init__.py
+bbs//migrations
+
+# Pipenv, Poetry, venv
+Pipfile.lock
+poetry.lock
+venv/
+.env/
+
+*/uploads/*

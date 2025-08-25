@@ -1,0 +1,214 @@
+/* bbs/static/bbs/style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 60px; /* ✅ footer와 겹치지 않도록 */
+}
+
+/* 메인 컨테이너 (첫 페이지) */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;   /* ✅ 세로 중앙 정렬 */
+    flex: 1; 
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* 제목 */
+.main-title {
+    font-size: 3rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.main-subtitle {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+/* 버튼 컨테이너 */
+.main-links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+/* 버튼 */
+.main-link {
+    display: inline-block;
+    min-width: 280px;
+    padding: 18px 30px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    background-color: #2563eb; /* 기본 파란색 */
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.main-link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+    background-color: #1e40af; /* hover 시 진한 파랑 */
+}
+
+/* 풋터 - 항상 하단 고정 */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 15px 10px;
+    background: transparent;
+    color: #555;
+    font-size: 0.9rem;
+    z-index: 100;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.6);
+}
+
+footer a {
+    color: #555;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a:hover {
+    color: #2563eb;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .main-link {
+        width: calc(100% - 40px);
+        font-size: 1.1rem;
+    }
+    .main-title {
+        font-size: 2.2rem;
+    }
+    .main-subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* =========================
+   로딩 화면 (Loading Screen)
+   ========================= */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* 반투명 검정 배경 */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#loading-screen.active {
+    opacity: 1;
+}
+
+.loading-spinner {
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 16px;
+    animation: spin 1s linear infinite;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* =========================
+   📌 price-range 페이지 전용 스타일
+   ========================= */
+.content-wrapper {
+    max-width: 800px;         
+    margin: 0 auto;           
+    padding: 20px;
+    text-align: center;       
+
+    /* ✅ 세로+가로 중앙 정렬 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   
+    align-items: center;       
+    min-height: calc(100vh - 100px); /* nav + footer 공간 제외 */
+}
+
+/* 네비게이션 아래 여백 */
+nav {
+    margin-bottom: 20px;
+}
+
+/* 폼 전체 가운데 정렬 */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* 숫자 입력창 */
+form input[type="number"] {
+    width: 260px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: right;
+    font-size: 1rem;
+}
+
+/* 버튼 */
+form button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+form button:hover {
+    background-color: #1e40af;
+}
+
+/* 섹션 제목 */
+h2, h3 {
+    margin: 20px 0 10px;
+    color: #2c3e50;
+}
