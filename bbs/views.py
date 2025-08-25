@@ -204,6 +204,8 @@ class DistrictForecastPage(TemplateView):
         })
 
 
+from bbs.biz.price_range_forecast import resultData
+
 class PriceRangeForecastPage(TemplateView):
     template_name = 'bbs/price_range_forecast.html'
     
