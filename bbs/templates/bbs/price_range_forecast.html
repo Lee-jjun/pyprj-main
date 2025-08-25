@@ -1,241 +1,336 @@
 {% extends 'bbs/base.html' %}
 {% load static %}
 
-{% block title %}가격대별 전/월세 예측{% endblock %}
+{% block title %}가격대별 전월세 예측{% endblock %}
 
 {% block content %}
 <style>
-    /* Overall page layout */
-    .container {
-        font-family: 'Malgun Gothic', '맑은 고딕', Arial, sans-serif;
-        padding: 40px;
-        max-width: 1200px;
-        margin: 0 auto; 
-        text-align: center;
+    /* 전체 페이지 레이아웃 및 폰트 설정 */
+    :root {
+        --body-bg: #fdfdfd;
+        --container-bg: #fff;
+        --main-text: #4a4a4a;
+        --heading-text: #2c3e50;
+        --border-color: #e0e0e0;
+        --code-bg: #f8f9fa;
+        --code-text: #5a5a5a;
+        --accent-color: #007bff;
+        --link-hover: #0056b3;
+    }
+    
+    body {
+        background-color: var(--body-bg);
+        font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', Arial, sans-serif;
+        line-height: 1.6;
+        color: var(--main-text);
+        margin: 0;
+        padding: 0;
     }
 
-    /* Title style */
+    .notebook-container {
+        padding: 40px 20px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
     .title {
-        color: #2c3e50;
-        margin-bottom: 20px;
-        font-size: 2.5rem;
-        font-weight: bold;
-    }
-
-    /* Result section style */
-    .results-section {
-        margin-top: 30px;
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .subtitle {
-        color: #34495e;
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-    }
-
-    /* Code and Accuracy sections */
-    .code-section, .accuracy-section {
-        margin-bottom: 30px;
-        text-align: left;
-    }
-    
-    .code-box {
-        background-color: #ecf0f1;
-        border: 1px solid #bdc3c7;
-        padding: 15px;
-        border-radius: 8px;
-        overflow-x: auto;
-    }
-    
-    .accuracy-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
-    
-    .accuracy-table th, .accuracy-table td {
-        border: 1px solid #ddd;
-        padding: 10px;
+        color: var(--heading-text);
         text-align: center;
-    }
-    
-    .accuracy-table th {
-        background-color: #3498db;
-        color: white;
-    }
-    
-    .accuracy-table tr:nth-child(even) {
-        background-color: #f2f2f2;
+        margin-bottom: 50px;
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -1px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 15px;
     }
 
-    /* Image container */
-    .image-container {
+    /* 셀 컨테이너 */
+    .cell {
+        background-color: var(--container-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        margin-bottom: 30px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .cell:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 코드 셀 스타일 */
+    .code-cell {
+        background-color: var(--code-bg);
+        padding: 20px;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        overflow-x: auto;
+        border-left: 4px solid var(--accent-color);
+    }
+
+    .code-cell pre {
+        margin: 0;
+        white-space: pre-wrap;
+    }
+    
+    /* 코드 셀 헤더 (새로 추가) */
+    .code-cell h3 {
+        color: var(--heading-text);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed var(--border-color);
+    }
+
+    /* 결과 출력 셀 스타일 */
+    .output-cell {
+        padding: 25px;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 30px;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
     }
+
+    .output-cell h3, .output-cell h4 {
+        color: var(--heading-text);
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .output-cell h3 { font-size: 1.5rem; }
+    .output-cell h4 { font-size: 1.1rem; }
 
     .result-image {
         max-width: 100%;
         height: auto;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
+        border-radius: 6px;
+        border: 1px solid #ddd;
     }
     
-    .result-image:hover {
-        transform: scale(1.02);
+    /* ⭐ 테이블 컨테이너 스타일 추가 ⭐ */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
     }
     
-    /* Error message style */
+    /* 정확도 테이블 스타일 */
+    .accuracy-table {
+        width: 100%;
+        min-width: 600px;
+        border-collapse: collapse;
+        margin-top: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .accuracy-table th, .accuracy-table td {
+        white-space: nowrap;
+        border: 1px solid var(--border-color);
+        padding: 12px;
+        text-align: center;
+    }
+    
+    .accuracy-table th {
+        background-color: var(--accent-color);
+        color: #fff;
+        font-weight: 500;
+        font-size: 1rem;
+    }
+    
+    .accuracy-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    
+    .accuracy-table tr:hover {
+        background-color: #f0f8ff;
+    }
+
+    /* 에러 메시지 스타일 */
     .error-message {
         color: #c0392b;
         font-weight: bold;
-        font-size: 1.2rem;
-        padding: 20px;
+        padding: 25px;
         border: 2px solid #e74c3c;
         border-radius: 8px;
         background-color: #fdeded;
+        text-align: center;
     }
 
-    /* No result message style */
+    /* 결과 없음 메시지 스타일 */
     .no-result-message {
         color: #7f8c8d;
         font-size: 1.2rem;
+        text-align: center;
+        padding: 30px;
+    }
+    
+    /* 링크 스타일 */
+    a {
+        color: var(--accent-color);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    
+    a:hover {
+        color: var(--link-hover);
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+        .notebook-container { padding: 20px 10px; }
+        .title { font-size: 2rem; margin-bottom: 30px; }
+        .cell { margin-bottom: 20px; }
     }
 </style>
 
-<div class="container">
+<div class="notebook-container">
     <h1 class="title">가격대별 전/월세 예측 페이지</h1>
-
+    
     {% if result %}
         {% if 'ERROR' in result %}
-            <div class="error-message">
+            <div class="cell error-message">
                 <p><strong>오류 발생:</strong> {{ result.ERROR }}</p>
                 <p>예측 결과를 불러오는 데 문제가 발생했습니다. 관리자에게 문의하세요.</p>
             </div>
         {% elif 'images' in result and result.images %}
-            <div class="results-section">
-                <h2 class="subtitle">분석 및 예측 결과</h2>
-                
-                <!-- Section for images -->
-                <p>아래에서 각 분석 단계의 핵심 코드와 그 결과를 확인하실 수 있습니다.</p>
+            <div class="cell">
+                <div class="code-cell">
+                    <h3>라이브러리 import 및 Matplotlib 설정</h3>
+                    <pre><code class="language-python">
+import os
+import io
+import base64
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from prophet import Prophet
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import time
 
-                <!-- Core Code for Demand Analysis -->
-                <div class="code-section">
-                    <h3 class="subtitle">핵심 코드: 구별/금액대별 수요량 분석</h3>
-                    <div class="code-box">
-                        <pre><code>
-# Group by district and price range to analyze demand
-demand_jeonse = df_jeonse.groupby(['구', '금액대']).size().unstack(fill_value=0)
-demand_wolse = df_wolse.groupby(['구', '금액대']).size().unstack(fill_value=0)
-
-# Check for empty dataframes and handle
-if not demand_jeonse.empty:
-    plt.figure(figsize=(15, 8))
-    sns.heatmap(demand_jeonse, annot=True, fmt='d', cmap='YlGnBu')
-    plt.title('구별 전세 수요량 히트맵', fontsize=20)
-    plt.xlabel('금액대', fontsize=12)
-    plt.ylabel('구', fontsize=12)
-    plt.show()
-
-if not demand_wolse.empty:
-    plt.figure(figsize=(15, 8))
-    sns.heatmap(demand_wolse, annot=True, fmt='d', cmap='YlGnBu')
-    plt.title('구별 월세 수요량 히트맵', fontsize=20)
-    plt.xlabel('금액대', fontsize=12)
-    plt.ylabel('구', fontsize=12)
-    plt.show()
-                        </code></pre>
-                    </div>
+# CRITICAL FIX: Matplotlib을 비대화형 백엔드로 설정합니다.
+# 이렇게 하면 "main thread is not in main loop" 오류를 방지할 수 있습니다.
+mpl.use('Agg')
+                    </code></pre>
                 </div>
+            </div>
+            
+            <div class="cell">
+                <div class="code-cell">
+                    <h3>구별/금액대별 수요량 분석 및 시각화</h3>
+                    <pre><code class="language-python">
+                        # 전세와 월세 데이터 분리
+                        df_jeonse = df[df['전월세구분'] == '전세'].copy()
+                        df_wolse = df[df['전월세구분'] == '월세'].copy()
 
-                <!-- Image for Demand Analysis -->
-                <div class="image-container">
+                        # 구별, 금액대별 수요량 분석
+                        demand_jeonse = df_jeonse.groupby(['구', '금액대']).size().unstack(fill_value=0)
+                        demand_wolse = df_wolse.groupby(['구', '금액대']).size().unstack(fill_value=0)
+                    </code></pre>
+                </div>
+                <div class="output-cell">
+                    <h4>전세 수요량 데이터</h4>
+                    <div class="table-container">
+                        {{ result.demand_jeonse_html|safe }}
+                    </div>
+                    <h4>월세 수요량 데이터</h4>
+                    <div class="table-container">
+                        {{ result.demand_wolse_html|safe }}
+                    </div>
+                    <h3>구별 수요량 분석 결과</h3>
                     <a href="{{ result.images.0 }}" target="_blank">
                         <img src="{{ result.images.0 }}" alt="구별 수요량 히트맵" class="result-image">
                     </a>
+                    {% if result.demand_jeonse_html and result.demand_wolse_html %}
+                    <br>
+                    {% endif %}
                 </div>
+            </div>
 
-                <!-- Core Code for Clustering -->
-                <div class="code-section">
-                    <h3 class="subtitle">핵심 코드: 구별 수요 패턴 군집화</h3>
-                    <div class="code-box">
-                        <pre><code>
-# Cluster analysis on demand patterns by district
-demand_by_gu = df.groupby(['구', '금액대']).size().unstack(fill_value=0)
-
-if not demand_by_gu.empty:
-    scaler = StandardScaler()
-    scaled_data = scaler.fit_transform(demand_by_gu)
-    
-    kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
-    clusters = kmeans.fit_predict(scaled_data)
-    
-    # PCA for visualization
-    pca = PCA(n_components=2)
-    pca_result = pca.fit_transform(scaled_data)
-    
-    demand_by_gu['Cluster'] = clusters
-    
-    plt.figure(figsize=(10, 8))
-    sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=demand_by_gu['Cluster'], palette='viridis', style=demand_by_gu['Cluster'], s=100)
-    plt.title('구별 수요 패턴 군집화', fontsize=18)
-    plt.xlabel('PCA 1', fontsize=12)
-    plt.ylabel('PCA 2', fontsize=12)
-    plt.show()
-                        </code></pre>
-                    </div>
+            <div class="cell">
+                <div class="code-cell">
+                    <h3>구별 수요 패턴 군집화 (K-Means + PCA)</h3>
+                    <pre><code class="language-python">
+                        # 구별 수요 패턴 데이터 준비
+                        df['계약년월'] = pd.to_datetime(df['계약년월'].astype(str), format='%Y%m')
+                        demand_by_gu = df.groupby(['구', '금액대']).size().unstack(fill_value=0)
+                                                
+                        # K-Means 및 PCA를 사용한 군집화
+                        scaler = StandardScaler()
+                        scaled_demand = scaler.fit_transform(demand_by_gu)
+                        optimal_k = 4
+                        kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init='auto')
+                        demand_by_gu['cluster'] = kmeans.fit_predict(scaled_demand)
+                        pca = PCA(n_components=2)
+                        reduced_data = pca.fit_transform(scaled_demand)
+                    </code></pre>
                 </div>
-
-                <!-- Image for Clustering -->
-                <div class="image-container">
+                <div class="output-cell">
+                    <h3>구별 수요 패턴 군집화 결과</h3>
                     <a href="{{ result.images.1 }}" target="_blank">
                         <img src="{{ result.images.1 }}" alt="구별 수요 패턴 군집화" class="result-image">
                     </a>
-                </div>
-                
-                <!-- Core Code for Prophet Model Prediction -->
-                <div class="code-section">
-                    <h3 class="subtitle">핵심 코드: Prophet 모델 예측</h3>
-                    <div class="code-box">
-                        <pre><code>
-# Each district performs a prediction
-for gu in gu_list:
-    gu_data = time_series_data[time_series_data['구'] == gu].rename(columns={'계약년월': 'ds', '거래건수': 'y'})
-    
-    if len(gu_data) > 3: # Check for enough data
-        # First Prophet model instance: for accuracy calculation
-        m1 = Prophet(seasonality_mode='multiplicative', daily_seasonality=False)
-        m1.fit(gu_data[:-3])
-        ...
-        
-        # Second Prophet model instance: for final prediction
-        m2 = Prophet(seasonality_mode='multiplicative', daily_seasonality=False)
-        m2.fit(gu_data)
-        ...
-                        </code></pre>
+                    {% if result.cluster_html %}
+                    <br>
+                    <h4>구별 군집 분류 데이터</h4>
+                    <div class="table-container">
+                        {{ result.cluster_html|safe }}
                     </div>
+                    {% endif %}
                 </div>
-                
-                <!-- Image for Prophet Model Prediction -->
-                <div class="image-container">
-                  
-                            <a href="{{ result.images.2 }}" target="_blank">
-                                <img src="{{ result.images.2 }}" alt="가격대별 전/월세 예측 그래프" class="result-image">
-                            </a>
-                  
-                </div>
+            </div>
 
-                <!-- New section for Accuracy Results -->
-                {% if 'accuracy' in result and result.accuracy %}
-                    <div class="accuracy-section">
-                        <h3 class="subtitle">예측 정확도 (Test Data 기준)</h3>
+            <div class="cell">
+                <div class="code-cell">
+                    <h3>Prophet 모델을 사용한 시계열 예측</h3>
+                    <pre><code class="language-python">
+                        # 시계열 데이터 준비
+                        time_series_data = df.groupby(['계약년월', '구']).size().reset_index(name='거래건수')
+                        accuracy_results = {}
+                        gu_list = time_series_data['구'].unique()
+                        forecast_results = {}
+                    </code></pre>
+                </div>
+                <div class="output-cell">
+                    <h3>Prophet 모델 예측 결과</h3>
+                    <a href="{{ result.images.2 }}" target="_blank">
+                        <img src="{{ result.images.2 }}" alt="가격대별 전/월세 예측 그래프" class="result-image">
+                    </a>
+                    {% if result.forecast_html %}
+                    <br>
+                    <h4>예측 결과 데이터 (샘플)</h4>
+                    <div class="table-container">
+                        {{ result.forecast_html|safe }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if 'accuracy' in result and result.accuracy %}
+            <div class="cell">
+                <div class="code-cell">
+                    <h3>5. 예측 정확도 반환</h3>
+                    <pre><code class="language-python">
+                        # 최종 결과 딕셔너리 생성 및 반환
+                        result_dict['images'] = plot_paths
+                        result_dict['accuracy'] = accuracy_results
+                        return result_dict
+                    </code></pre>
+                </div>
+                <div class="output-cell">
+                    <h3>예측 정확도</h3>
+                    <div class="table-container">
                         <table class="accuracy-table">
                             <thead>
                                 <tr>
@@ -257,13 +352,18 @@ for gu in gu_list:
                             </tbody>
                         </table>
                     </div>
-                {% endif %}
+                </div>
             </div>
+            {% endif %}
         {% else %}
-            <p class="no-result-message">예측 결과 이미지가 없습니다.</p>
+            <div class="no-result-message">
+                <p>예측 결과 이미지가 없습니다.</p>
+            </div>
         {% endif %}
     {% else %}
-        <p class="no-result-message">결과가 없습니다.</p>
+        <div class="no-result-message">
+            <p>결과가 없습니다.</p>
+        </div>
     {% endif %}
 </div>
 

@@ -9,6 +9,7 @@
     <title>{% block title %}Ai-X APT 부동산 예측 서비스{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'bbs/css/style.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
 </head>
 <body>
     <!-- 1. 로딩 화면 -->
@@ -64,5 +65,8 @@
             }
         }
     </script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 </body>
 </html>

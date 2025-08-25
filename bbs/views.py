@@ -204,21 +204,23 @@ class DistrictForecastPage(TemplateView):
         })
 
 
-from bbs.biz.price_range_forecast import resultData
+from bbs.biz.price_range_forecast import run_analysis
 
 class PriceRangeForecastPage(TemplateView):
     template_name = 'bbs/price_range_forecast.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            # resultData() 함수를 호출하여 분석 결과를 가져옵니다.
-            analysis_result = resultData()
-            # context에 결과 딕셔너리 자체를 추가합니다. .items()는 제거합니다.
-            context['result'] = analysis_result
-        except Exception as e:
-            # 오류가 발생하면 오류 메시지를 context에 추가합니다.
-            context['result'] = {'ERROR': str(e)}
+    
+        # 이 부분이 수정되었습니다.
+        # 이제 run_analysis() 함수를 호출하여 분석 결과를 받아옵니다.
+        # 이 함수가 실행되면 이미지가 서버에 생성됩니다.
+        result = run_analysis()
+        
+        print("get_context_data POST Start == ")
+        print(f"data = {result}")
+        context['result'] = result  # context에 분석 결과를 추가
+        
         return context
     
 #####################################
