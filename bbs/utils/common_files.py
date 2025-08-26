@@ -29,10 +29,13 @@ class FileUtils:
         return pd.read_csv(file_path, encoding=encoding, sep=sep)
 
     #차트 이미지로 만들기
-    def savePngToPath(self,filename,closeFlag):
+    def savePngToPath(self,filename,closeFlag=False):
+        print("=============== filename ==============")
+        print({self.img_dir})
+        print({filename})
         s_filename = self.img_dir + "/" +filename
         
-        print("=============== filename ==============")
+        
         print({s_filename})
         print("=============== filename ==============")
         plt.savefig(s_filename)

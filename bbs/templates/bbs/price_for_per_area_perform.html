@@ -87,33 +87,11 @@
         padding: 6px 10px;
         text-align: center;
     } 
- /* === 헤더 버튼 스타일 === */
-        .main-header {
-            text-align: center;
-            margin: 0;
-            padding: 20px 0;
-        }
 
-        .header-button {
-            display: inline-block;
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #fff;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
-            transition: transform 0.3s ease, background 0.3s ease;
-        }
-
-        .header-button:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.25);
-        }
-
+    .result-box {
+        flex: 1;
+        min-width: 300px;
+    }
 
   </style>
 </head>
@@ -128,16 +106,15 @@
             <option value="1">LinearRegression</option>
             <option value="2">Decision Tree Regression</option>
             <option value="4">Gradient Boosting Regression</option>
-            <!-- <option value="5">=전체=</option>   -->
-          </select>
+             <option value="5">===== default =====</option>
+            </select>
         </div>
         <div>
           <label class="invisible" style="opacity:0">조회</label><br/>
           <button id="searchBtn" type="button" aria-label="조회버튼">조회</button>
         </div>
       </div>
-      <div class="muted mono">상단 고정 툴바 · 같은 페이지에 결과 표시</div>
-    </div>
+      </div>
   </header>
 
   <main>
@@ -145,7 +122,7 @@
       <section class="card">
         <h1 class="heading">모델 조회 데모</h1>
         <p class="sub">상단에서 모델을 선택하고 <span class="kbd">조회</span>를 클릭하세요. 선택된 모델의 요약 정보와 예시 결과가 이 영역에 표시됩니다.</p>
-        <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
+        <div id="resultArea" style="display: flex; gap: 20px; flex-wrap: wrap;" aria-live="polite" aria-busy="false">
           <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
             <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p>
           </div>
@@ -154,12 +131,20 @@
       </section>
 
       <section class="card">
-        <h2 class="result-title">백엔드 연동 예시 (fetch)</h2>
+        <h2 class="result-title">Python 코드 예시</h2>
         <pre class="mono" style="white-space:pre-wrap; word-break:break-all; background:#0b1323; border:1px solid var(--border); padding:12px; border-radius:12px;">
-        fetch(`/api/search?model=${'{선택된_모델'}`})
-          .then(r => r.json())
-          .then(data => renderResult(data))
-          .catch(err => showError(err));
+from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
+
+# 모델 생성
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+# 가상 데이터로 학습
+# X_train, y_train은 실제 데이터셋으로 대체해야 합니다.
+# model.fit(X_train, y_train)
+
+# 예측 결과
+# predicted_values = model.predict(X_test)
         </pre>
       </section>
     </div>
@@ -202,22 +187,8 @@
     }
 
 
-    // function renderTable(rows) {
-    //   const trs = rows.map(row =>
-    //     `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
-    //   ).join('');
-    //   return `
-    //     <table role="table" aria-label="모델 파라미터">
-    //       <thead>
-    //         <tr><th>면적</th><th>항목</th><th>값</th></tr>
-    //       </thead>
-    //       <tbody>${trs}</tbody>
-    //     </table>`;
-    // }
-
-
-     function renderTable(rows) {
-              const trs = rows.map(item => `
+    function renderTable(rows) {
+      const trs = rows.map(item => `
         <tr>
             <td rowspan="3">${item.면적}</td>
             <td>RMSE</td>
@@ -231,54 +202,35 @@
             <td>MAE</td>
             <td>${item.MAE}</td>
         </tr>
-    `).join('');
+      `).join('');
 
-    return `
-    <table role="table" aria-label="모델 파라미터" style="width:100%; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th>면적</th>
-                <th>항목</th>
-                <th>값</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${trs}
-        </tbody>
-    </table>`;
+      return `
+        <table role="table" aria-label="모델 파라미터" style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>면적</th>
+                    <th>항목</th>
+                    <th>값</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${trs}
+            </tbody>
+        </table>`;
     }
 
-
-
-    function renderResult(jsonData,img) {
+    function renderResult(jsonData, img) {
         const modelSel = document.getElementById('modelSelect');
         const modelName = modelSel.options[modelSel.selectedIndex].text;
-        const info = MODEL_INFO[modelName]
-        // -----------------------
-        // 성능지표 변환
-        // -----------------------
-        const perf = jsonData.performance; 
+        const info = MODEL_INFO[modelName];
 
-        // const jeonseRows = perf["전세"].flatMap(item => [
-        //     [item.면적, "RMSE", item.RMSE],
-        //     [item.면적, "R2", item.R2],
-        //     [item.면적, "MAE", item.MAE],
-        // ]);
-
-        // const wolseRows = perf["월세"].flatMap(item => [
-        //     [item.면적, "RMSE", item.RMSE],
-        //     [item.면적, "R2", item.R2],
-        //     [item.면적, "MAE", item.MAE],
-        // ]);
-
+        const perf = jsonData.performance;
         const jeonseRows = perf["전세"].map(item => ({
             면적: item.면적,
             RMSE: item.RMSE,
             R2: item.R2,
             MAE: item.MAE
         }));
-
-        // 월세
         const wolseRows = perf["월세"].map(item => ({
             면적: item.면적,
             RMSE: item.RMSE,
@@ -286,40 +238,33 @@
             MAE: item.MAE
         }));
 
-        // 표 생성
         const jeonseTable = renderTable(jeonseRows);
         const wolseTable = renderTable(wolseRows);
-        const imgUrl = img;
-        console.log("  image 나와라 "+imgUrl)
-        // 화면 렌더링
+        const jeonseImgUrl = img ? img.jeonse : null;
+        const wolseImgUrl = img ? img.wolse : null;
+
         resultArea.setAttribute('aria-busy', 'false');
         resultArea.innerHTML = `
-            <div class="card">
-              <div class="result-title">선택 모델: ${modelName}</div>
-              <p class="muted">${info.desc}</p>
+            <div class="card" style="box-shadow:none; padding:0; border:none; background:transparent;">
+                <div class="result-title">선택 모델: ${modelName}</div>
+                <p class="muted">${info.desc}</p>
+            </div>
+            
+            <div class="result-box">
+                <h3 class="sub">평가지표 (전세)</h3>
+                ${jeonseTable}
+                <h3 class="sub" style="margin-top: 20px;">차트 정보 (전세)</h3>
+                ${jeonseImgUrl ? `<img src="${jeonseImgUrl}" alt="전세 모델 결과 차트" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">` : `<p class="muted">차트 이미지가 없습니다.</p>`}
+            </div>
 
-              <!-- 가로 Flex 컨테이너 -->
-              <div style="display: flex; gap: 20px; flex-wrap: nowrap;">
-                <div style="flex: 1; min-width: 500px;">
-                  <h3 class="sub">평가지표 (전세)</h3>
-                  ${jeonseTable}
-                </div>
-                <div style="flex: 1; min-width: 500px;">
-                  <h3 class="sub">평가지표 (월세)</h3>
-                  ${wolseTable}
-                </div>
-              </div>
-
-              <!-- 이미지 출력: 표 아래 -->
-              ${imgUrl ? `<div style="margin-top: 20px; text-align:center;">
-                <img src="${imgUrl}" alt="모델 결과 이미지" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">
-              </div>` : ''}
-
+            <div class="result-box">
+                <h3 class="sub">평가지표 (월세)</h3>
+                ${wolseTable}
+                <h3 class="sub" style="margin-top: 20px;">차트 정보 (월세)</h3>
+                ${wolseImgUrl ? `<img src="${wolseImgUrl}" alt="월세 모델 결과 차트" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">` : `<p class="muted">차트 이미지가 없습니다.</p>`}
             </div>
         `;
     }
-
-
 
     function showLoading(){
       resultArea.setAttribute('aria-busy', 'true');

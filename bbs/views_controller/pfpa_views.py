@@ -13,7 +13,7 @@ import json
 from bbs.biz.price_for_per_area_line import engine
 
 class PriceForPerAreaPage(TemplateView):
-    template_name = 'bbs/price_for_per_area.html'
+    template_name = 'bbs/price_for_per_area_perform.html'
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
         
@@ -44,7 +44,7 @@ def convert(obj):
         return obj
     
 class PriceForPerArea(View):
-    template_name = 'bbs/price_for_per_area.html'
+    template_name = 'price_for_per_area_perform.html'
     def get(self, request, *args, **kwargs):
        
         try:
@@ -71,8 +71,9 @@ class PriceForPerArea(View):
             eventType = body.get("TYPE")
             # engine 호출 (예시)
             result = engine(eventType)
+            print(f">>>>>>>>> {result} <<<<<<<<<<")
             result = convert(result)
-
+            print(f"RESULT {result}")
             return JsonResponse(result, safe=False)
         except Exception as e:
             return JsonResponse({"ERROR": str(e)}, status=500)
