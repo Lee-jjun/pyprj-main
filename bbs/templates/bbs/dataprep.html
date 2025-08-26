@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h2>데이터 전처리 과정</h2>
+
+  <div class="cell">
+    <div class="input">
+      <span class="prompt">In [1]:</span>
+      <code>import pandas as pd<br>df = pd.read_csv("data.csv")<br>df.head()</code>
+    </div>
+    <button onclick="toggleOutput('out1')">▶ 실행</button>
+    <div class="output" id="out1">
+      <pre>
+id   date    value
+1  2024-01   123
+2  2024-02   456
+3  2024-03   789
+      </pre>
+    </div>
+  </div>
+{% endblock %}

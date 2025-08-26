@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h2>데이터 수집</h2>
+  <p>공공데이터 포털에서 기간 옵션을 설정하여 CSV 파일을 다운로드했습니다.</p>
+
+  <h3>데이터 수집 화면</h3>
+  <img src="{% static 'img/datacollect.png' %}" alt="공공데이터 수집 화면" width="700">
+
+  <h3>데이터 예시 (CSV 상위 5행)</h3>
+  <pre>
+id,date,value
+1,2024-01,123
+2,2024-02,456
+3,2024-03,789
+4,2024-04,234
+5,2024-05,567
+  </pre>
+{% endblock %}
