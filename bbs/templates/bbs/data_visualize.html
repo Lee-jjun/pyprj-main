@@ -46,7 +46,8 @@
         function fetchData(plotType) {
             showLoading();
             // Django 뷰에서 정의한 get_data_visualize_data URL을 사용합니다.
-            fetch(`{% url 'bbs:get_data_visualize_data' %}?plot_type=${plotType}`)
+            //{--% url 'bbs:get_data_visualize_data' %-- }
+            fetch(`/?plot_type=${plotType}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('네트워크 응답이 실패했습니다.');

@@ -13,6 +13,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from django.shortcuts import render
 import time
+import json # JSON 처리를 위한 라이브러리 추가
 
 # Matplotlib을 비대화형 백엔드로 설정합니다.
 mpl.use('Agg')
@@ -96,7 +97,7 @@ def run_analysis():
             plt.text(reduced_data[i, 0] + 0.05, reduced_data[i, 1], gu)
             print(gu)
 
-       
+        
         plt.tight_layout()
         buffer = io.BytesIO()
         plt.savefig(buffer, format='png')
@@ -105,20 +106,19 @@ def run_analysis():
         result_dict['images'].append(f'data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}')
         result_dict['cluster_html'] = demand_by_gu[['cluster']].to_html(classes=['accuracy-table'])
     
-        print("######### HTML ################")
         print(result_dict['cluster_html'])
-        print("######### HTML ################")
         # 8. Prophet 모델을 사용한 시계열 예측
         time_series_data = df.groupby(['계약년월', '구']).size().reset_index(name='거래건수')
         accuracy_results = {}
+        graph_urls = {} # 각 구별 그래프 URL을 저장할 딕셔너리
         gu_list = time_series_data['구'].unique()
         
-        plt.figure(figsize=(30, 20))
-        num_rows = int(np.ceil(len(gu_list) / 5))
-        num_cols = 5
+        # plt.figure(figsize=(30, 20)) # 이 부분은 삭제
+        # num_rows = int(np.ceil(len(gu_list) / 5)) # 이 부분은 삭제
+        # num_cols = 5 # 이 부분은 삭제
 
         for i, gu in enumerate(gu_list):
-            ax = plt.subplot(num_rows, num_cols, i + 1)
+            plt.figure(figsize=(10, 6)) # 각 구별로 새로운 Figure 생성
             gu_data = time_series_data[time_series_data['구'] == gu].rename(columns={'계약년월': 'ds', '거래건수': 'y'})
             if len(gu_data) > 3:
                 train_data = gu_data[:-3]
@@ -143,27 +143,35 @@ def run_analysis():
                 bar_data['ds_str'] = bar_data['ds'].dt.strftime('%Y-%m')
                 bar_data['type'] = '실제'
                 bar_data.loc[bar_data['ds'].isin(forecast_df['ds']), 'type'] = '예측'
-                sns.barplot(x='ds_str', y='y', hue='type', dodge=False, ax=ax, data=bar_data)
-                ax.set_title(f'{gu} 거래량 예측', fontsize=20)
-                ax.set_xlabel('날짜', fontsize=12)
-                ax.set_ylabel('거래 건수', fontsize=12)
-                ax.legend(title='데이터 유형', loc='upper left', fontsize=10)
+                sns.barplot(x='ds_str', y='y', hue='type', dodge=False, data=bar_data)
+                plt.title(f'{gu} 거래량 예측', fontsize=15)
+                plt.xlabel('날짜', fontsize=12)
+                plt.ylabel('거래 건수', fontsize=12)
+                plt.legend(title='데이터 유형', loc='upper left', fontsize=10)
                 plt.xticks(rotation=45, ha='right')
+                
             else:
-                ax.text(0.5, 0.5, '데이터 부족', ha='center', va='center', fontsize=25, color='red')
-                ax.set_title(f'{gu} 거래량', fontsize=20)
-                ax.set_xlabel('날짜', fontsize=12)
-                ax.set_ylabel('거래 건수', fontsize=12)
-                ax.set_xticks([])
-                ax.set_yticks([])
-        plt.tight_layout()
-        buffer = io.BytesIO()
-        plt.savefig(buffer, format='png')
-        buffer.seek(0)
-        plt.close()
-        result_dict['images'].append(f'data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}')
+                plt.text(0.5, 0.5, '데이터 부족', ha='center', va='center', fontsize=20, color='red', transform=plt.gca().transAxes)
+                plt.title(f'{gu} 거래량', fontsize=15)
+                plt.xlabel('날짜', fontsize=12)
+                plt.ylabel('거래 건수', fontsize=12)
+                plt.xticks([])
+                plt.yticks([])
+            
+            plt.tight_layout()
+            # 각 그래프를 개별적으로 버퍼에 저장
+            buffer = io.BytesIO()
+            plt.savefig(buffer, format='png')
+            buffer.seek(0)
+            plt.close()
+            
+            # Base64 인코딩하여 딕셔너리에 추가
+            graph_urls[gu] = f'data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}'
+            
+        # result_dict['images'].append(f'data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}') # 이 부분은 삭제
         result_dict['accuracy'] = accuracy_results
-    
+        result_dict['graph_urls'] = graph_urls # 새로운 graph_urls 딕셔너리 추가
+        
     except Exception as e:
         result_dict["ERROR"] = f"오류가 발생했습니다: {e}"
     
@@ -175,4 +183,13 @@ def price_prediction(request):
     결과를 템플릿으로 전달합니다.
     """
     result = run_analysis()
-    return render(request, 'bbs/price_prediction.html', {'result': result})
+    
+    # 템플릿에 전달할 JSON 데이터 추가
+    accuracy_json = json.dumps(result.get('accuracy', {}))
+    graph_urls_json = json.dumps(result.get('graph_urls', {}))
+    
+    return render(request, 'bbs/price_prediction.html', {
+        'result': result, 
+        'accuracy_json': accuracy_json, 
+        'graph_urls_json': graph_urls_json
+    })

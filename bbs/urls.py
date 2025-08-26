@@ -25,8 +25,8 @@ urlpatterns = [
     # path('data-source-data/', views.get_data_source_data, name='get_data_source_data'),
     
     # ✨ 새로운 뷰에 대한 URL 패턴을 추가합니다.
-    path('data_visualize/', views.DataVisualizePage.as_view(), name='data_visualize'),
-    path('get_data_visualize_data/', views.get_data_visualize_data, name='get_data_visualize_data'),
+    #path('data_visualize/', views.DataVisualizePage.as_view(), name='data_visualize'),
+    #path('get_data_visualize_data/', views.get_data_visualize_data, name='get_data_visualize_data'),
 
 ]
 

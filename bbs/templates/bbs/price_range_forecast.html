@@ -5,17 +5,17 @@
 
 {% block content %}
 <style>
-    /* 전체 페이지 레이아웃 및 폰트 설정 */
+    /* 이 부분은 웹 페이지의 전체적인 디자인을 담당하는 CSS 코드입니다. */
     :root {
-        --body-bg: #fdfdfd;
-        --container-bg: #fff;
-        --main-text: #4a4a4a;
-        --heading-text: #2c3e50;
-        --border-color: #e0e0e0;
-        --code-bg: #f8f9fa;
-        --code-text: #5a5a5a;
-        --accent-color: #007bff;
-        --link-hover: #0056b3;
+        --body-bg: #fdfdfd; /* 배경색 */
+        --container-bg: #fff; /* 컨테이너 배경색 */
+        --main-text: #4a4a4a; /* 기본 글자색 */
+        --heading-text: #2c3e50; /* 제목 글자색 */
+        --border-color: #e0e0e0; /* 경계선 색상 */
+        --code-bg: #f8f9fa; /* 코드 셀 배경색 */
+        --code-text: #5a5a5a; /* 코드 글자색 */
+        --accent-color: #007bff; /* 강조 색상 (파란색) */
+        --link-hover: #0056b3; /* 링크 마우스 오버 색상 */
     }
     
     body {
@@ -40,7 +40,7 @@
         font-size: 2.5rem;
         font-weight: 700;
         letter-spacing: -1px;
-        border-bottom: 2px solid var(--border-color);
+        border-bottom: none;
         padding-bottom: 15px;
     }
 
@@ -75,7 +75,6 @@
         white-space: pre-wrap;
     }
     
-    /* 코드 셀 헤더 (새로 추가) */
     .code-cell h3 {
         color: var(--heading-text);
         font-size: 1.2rem;
@@ -93,12 +92,11 @@
         flex-direction: column;
         align-items: center;
         gap: 30px;
-        border-top: 1px solid var(--border-color);
+        border-top: none;
         text-align: center;
     }
 
     .output-cell h3, .output-cell h4 {
-        color: var(--heading-text);
         font-weight: 600;
         margin: 0;
     }
@@ -113,45 +111,95 @@
         border: 1px solid #ddd;
     }
     
-    /* ⭐ 테이블 컨테이너 스타일 추가 ⭐ */
+    /* 테이블 컨테이너 스타일 */
     .table-container {
         width: 100%;
         overflow-x: auto;
+        border: none;
     }
-    
-    /* 정확도 테이블 스타일 */
-    .accuracy-table {
+
+    .table-container table {
+        width: 100%; /* 테이블 너비는 유지 */
+        font-size: 0.8rem; /* 글자 크기를 줄여서 표를 더 작게 만듭니다 */
+        border-collapse: collapse; /* 셀 경계를 하나로 합칩니다 */
+        border: 1px solid var(--border-color); /* 테이블 전체에 단일 테두리를 설정합니다 */
+        border-radius: 6px; /* 모서리를 둥글게 만듭니다 */
+        overflow: hidden; /* 둥근 모서리에 맞게 내용이 잘리도록 합니다 */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 부드러운 그림자 효과를 추가합니다 */
+    }
+
+    .table-container th, 
+    .table-container td {
+        padding: 8px 10px; /* 셀 내부 여백을 줄입니다 */
+        text-align: left; /* 텍스트를 왼쪽 정렬합니다 */
+        border: none; /* 셀 내부의 기존 테두리를 제거합니다 */
+    }
+
+    .table-container th {
+        background-color: #f7f7f7; /* 헤더 배경색을 밝은 회색으로 설정합니다. */
+        font-weight: 600; /* 글씨를 더 굵게 만듭니다. */
+    }
+
+    /* 정확도 목록 컨테이너 스타일 */
+    .accuracy-list {
         width: 100%;
-        min-width: 600px;
-        border-collapse: collapse;
-        margin-top: 20px;
-        border: 1px solid var(--border-color);
+        margin-top: 30px;
+        /* 기존 테두리 제거 */
+        border: none;
         border-radius: 6px;
         overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 경계선 대신 그림자 효과 추가 */
+    }
+    .accuracy-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
     }
     
-    .accuracy-table th, .accuracy-table td {
-        white-space: nowrap;
-        border: 1px solid var(--border-color);
-        padding: 12px;
-        text-align: center;
-    }
-    
-    .accuracy-table th {
-        background-color: var(--accent-color);
-        color: #fff;
-        font-weight: 500;
-        font-size: 1rem;
-    }
-    
-    .accuracy-table tr:nth-child(even) {
+    .accuracy-list-item:hover {
         background-color: #f9f9f9;
     }
     
-    .accuracy-table tr:hover {
-        background-color: #f0f8ff;
+    .accuracy-list-item:last-child {
+        border-bottom: none;
+    }
+    
+    .accuracy-list-item h4 {
+        color: var(--heading-text);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .accuracy-list-item p {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--main-text);
+        margin: 0;
     }
 
+    /* 구 버튼 스타일 */
+    .gu-button {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        color: var(--heading-text);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 8px 15px;
+        transition: all 0.2s ease;
+    }
+
+    .gu-button.active, .gu-button:hover {
+        background-color: var(--accent-color);
+        color: #fff;
+        border-color: var(--accent-color);
+    }
+    
     /* 에러 메시지 스타일 */
     .error-message {
         color: #c0392b;
@@ -181,7 +229,7 @@
     a:hover {
         color: var(--link-hover);
     }
-   
+
     /* 반응형 디자인 */
     @media (max-width: 768px) {
         .notebook-container { padding: 20px 10px; }
@@ -199,7 +247,7 @@
                 <p><strong>오류 발생:</strong> {{ result.ERROR }}</p>
                 <p>예측 결과를 불러오는 데 문제가 발생했습니다. 관리자에게 문의하세요.</p>
             </div>
-        {% elif 'images' in result and result.images %}
+        {% else %}
             <div class="cell">
                 <div class="code-cell">
                     <h3>라이브러리 import 및 Matplotlib 설정</h3>
@@ -219,9 +267,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import time
 
-# CRITICAL FIX: Matplotlib을 비대화형 백엔드로 설정합니다.
-# 이렇게 하면 "main thread is not in main loop" 오류를 방지할 수 있습니다.
-mpl.use('Agg')   test
+mpl.use('Agg')
                     </code></pre>
                 </div>
             </div>
@@ -230,13 +276,31 @@ mpl.use('Agg')   test
                 <div class="code-cell">
                     <h3>구별/금액대별 수요량 분석 및 시각화</h3>
                     <pre><code class="language-python">
-                        # 전세와 월세 데이터 분리
-                        df_jeonse = df[df['전월세구분'] == '전세'].copy()
-                        df_wolse = df[df['전월세구분'] == '월세'].copy()
+# 데이터 전처리 및 금액대 분류
+df['구'] = df['시군구'].apply(lambda x: x.split()[1] if len(x.split()) > 1 else None)
+df.dropna(subset=['구'], inplace=True)
+df = df[['시군구', '전월세구분', '보증금(만원)', '월세금(만원)', '계약년월', '구']]
+df['보증금(만원)'] = pd.to_numeric(df['보증금(만원)'].str.replace(',', '', regex=True).fillna('0'))
+df['월세금(만원)'] = pd.to_numeric(df['월세금(만원)'].str.replace(',', '', regex=True).fillna('0'))
+df['환산보증금'] = df.apply(
+    lambda row: row['보증금(만원)'] + row['월세금(만원)'] * 100 if row['전월세구분'] == '월세' else row['보증금(만원)'], axis=1
+)
+df = df[df['환산보증금'] <= 200000]
+bins = list(range(0, int(df['환산보증금'].max()) + 10000, 10000))
+labels = [f'{i // 10000}억~{(i + 10000) // 10000}억' for i in range(0, int(df['환산보증금'].max()) + 10000, 10000)[:-1]]
+df['금액대'] = pd.cut(df['환산보증금'], bins=bins, labels=labels, right=False)
+df['계약년월'] = pd.to_datetime(df['계약년월'].astype(str), format='%Y%m')
 
-                        # 구별, 금액대별 수요량 분석
-                        demand_jeonse = df_jeonse.groupby(['구', '금액대']).size().unstack(fill_value=0)
-                        demand_wolse = df_wolse.groupby(['구', '금액대']).size().unstack(fill_value=0)
+plt.rcParams['font.family'] = 'Malgun Gothic'
+mpl.rcParams['axes.unicode_minus'] = False
+
+# 전세와 월세 데이터 분리
+df_jeonse = df[df['전월세구분'] == '전세'].copy()
+df_wolse = df[df['전월세구분'] == '월세'].copy()
+
+# 구별, 금액대별 수요량 분석
+demand_jeonse = df_jeonse.groupby(['구', '금액대']).size().unstack(fill_value=0)
+demand_wolse = df_wolse.groupby(['구', '금액대']).size().unstack(fill_value=0)
                     </code></pre>
                 </div>
                 <div class="output-cell">
@@ -262,57 +326,31 @@ mpl.use('Agg')   test
                 <div class="code-cell">
                     <h3>구별 수요 패턴 군집화 (K-Means + PCA)</h3>
                     <pre><code class="language-python">
-                        # 구별 수요 패턴 데이터 준비
-                        df['계약년월'] = pd.to_datetime(df['계약년월'].astype(str), format='%Y%m')
-                        demand_by_gu = df.groupby(['구', '금액대']).size().unstack(fill_value=0)
-                                                
-                        # K-Means 및 PCA를 사용한 군집화
-                        scaler = StandardScaler()
-                        scaled_demand = scaler.fit_transform(demand_by_gu)
-                        optimal_k = 4
-                        kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init='auto')
-                        demand_by_gu['cluster'] = kmeans.fit_predict(scaled_demand)
-                        pca = PCA(n_components=2)
-                        reduced_data = pca.fit_transform(scaled_demand)
+# 구별 수요 패턴 데이터 준비
+df['계약년월'] = pd.to_datetime(df['계약년월'].astype(str), format='%Y%m')
+demand_by_gu = df.groupby(['구', '금액대']).size().unstack(fill_value=0)
+                        
+# K-Means 및 PCA를 사용한 군집화
+scaler = StandardScaler()
+scaled_demand = scaler.fit_transform(demand_by_gu)
+optimal_k = 4
+kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init='auto')
+demand_by_gu['cluster'] = kmeans.fit_predict(scaled_demand)
+pca = PCA(n_components=2)
+reduced_data = pca.fit_transform(scaled_demand)
                     </code></pre>
                 </div>
                 <div class="output-cell">
+                    <h4>구별 군집 분류 데이터</h4>
+                    <div class="table-container">
+                        {{ result.cluster_html|safe }}
+                    </div>
+                    <br>
                     <h3>구별 수요 패턴 군집화 결과</h3>
                     <a href="{{ result.images.1 }}" target="_blank">
                         <img src="{{ result.images.1 }}" alt="구별 수요 패턴 군집화" class="result-image">
                     </a>
                     {% if result.cluster_html %}
-                    <br>
-                    <h4>구별 군집 분류 데이터</h4>
-                    <div class="table-container">
-                        {{ result.cluster_html|safe }}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="cell">
-                <div class="code-cell">
-                    <h3>Prophet 모델을 사용한 시계열 예측</h3>
-                    <pre><code class="language-python">
-                        # 시계열 데이터 준비
-                        time_series_data = df.groupby(['계약년월', '구']).size().reset_index(name='거래건수')
-                        accuracy_results = {}
-                        gu_list = time_series_data['구'].unique()
-                        forecast_results = {}
-                    </code></pre>
-                </div>
-                <div class="output-cell">
-                    <h3>Prophet 모델 예측 결과</h3>
-                    <a href="{{ result.images.2 }}" target="_blank">
-                        <img src="{{ result.images.2 }}" alt="가격대별 전/월세 예측 그래프" class="result-image">
-                    </a>
-                    {% if result.forecast_html %}
-                    <br>
-                    <h4>예측 결과 데이터 (샘플)</h4>
-                    <div class="table-container">
-                        {{ result.forecast_html|safe }}
-                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -320,45 +358,80 @@ mpl.use('Agg')   test
             {% if 'accuracy' in result and result.accuracy %}
             <div class="cell">
                 <div class="code-cell">
-                    <h3>5. 예측 정확도 반환</h3>
+                    <h3>Prophet 모델 예측 &amp; 정확도 평가</h3>
                     <pre><code class="language-python">
-                        # 최종 결과 딕셔너리 생성 및 반환
-                        result_dict['images'] = plot_paths
-                        result_dict['accuracy'] = accuracy_results
-                        return result_dict
+# 시계열 예측 및 정확도 지표 반환
+time_series_data = df.groupby(['계약년월', '구']).size().reset_index(name='거래건수')
+gu_list = time_series_data['구'].unique()
+
+for i, gu in enumerate(gu_list):
+    plt.figure(figsize=(10, 6)) # 각 구별로 새로운 Figure 생성
+    gu_data = time_series_data[time_series_data['구'] == gu].rename(columns={'계약년월': 'ds', '거래건수': 'y'})
+    if len(gu_data) > 3:
+        train_data = gu_data[:-3]
+        test_data = gu_data[-3:]
+        m1 = Prophet(seasonality_mode='multiplicative', daily_seasonality=False)
+        m1.fit(train_data)
+        future_test = m1.make_future_dataframe(periods=3, freq='M')
+        forecast_test = m1.predict(future_test)
+        test_forecast = forecast_test['yhat'].tail(3)
+        y_true = test_data['y'].values
+        y_pred = test_forecast.values
+        mae = mean_absolute_error(y_true, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100 if np.all(y_true != 0) else float('inf')
+        accuracy_results[gu] = {'MAE': mae, 'RMSE': rmse, 'MAPE': mape}
+        m2 = Prophet(seasonality_mode='multiplicative', daily_seasonality=False)
+        m2.fit(gu_data)
+        future_final = m2.make_future_dataframe(periods=3, freq='M')
+        forecast_final = m2.predict(future_final)
+        forecast_df = forecast_final[['ds', 'yhat']].tail(3)
+        bar_data = pd.concat([gu_data, forecast_df.rename(columns={'yhat': 'y'})], ignore_index=True)
+        bar_data['ds_str'] = bar_data['ds'].dt.strftime('%Y-%m')
+        bar_data['type'] = '실제'
+        bar_data.loc[bar_data['ds'].isin(forecast_df['ds']), 'type'] = '예측'
+        sns.barplot(x='ds_str', y='y', hue='type', dodge=False, data=bar_data)
+        plt.title(f'{gu} 거래량 예측', fontsize=15)
+        plt.xlabel('날짜', fontsize=12)
+        plt.ylabel('거래 건수', fontsize=12)
+        plt.legend(title='데이터 유형', loc='upper left', fontsize=10)
+        plt.xticks(rotation=45, ha='right')
+                    
+    else:
+        plt.text(0.5, 0.5, '데이터 부족', ha='center', va='center', fontsize=20, color='red', transform=plt.gca().transAxes)
+        plt.title(f'{gu} 거래량', fontsize=15)
+        plt.xlabel('날짜', fontsize=12)
+        plt.ylabel('거래 건수', fontsize=12)
+        plt.xticks([])
+        plt.yticks([])
+
+                        # 각 구별 개별 그래프 및 정확도 지표 생성 로직
                     </code></pre>
                 </div>
-                <div class="output-cell">
-                    <h3>예측 정확도</h3>
-                    <div class="table-container">
-                        <table class="accuracy-table">
-                            <thead>
-                                <tr>
-                                    <th>구</th>
-                                    <th>MAE</th>
-                                    <th>RMSE</th>
-                                    <th>MAPE (%)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for gu, metrics in result.accuracy.items %}
-                                    <tr>
-                                        <td>{{ gu }}</td>
-                                        <td>{{ metrics.MAE|floatformat:2 }}</td>
-                                        <td>{{ metrics.RMSE|floatformat:2 }}</td>
-                                        <td>{{ metrics.MAPE|floatformat:2 }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="output-cell" style="gap: 50px;">
+                    <h3>구별 예측 결과 및 정확도</h3>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                        {% for gu, metrics in result.accuracy.items %}
+                            <button class="gu-button" data-gu="{{ gu }}">
+                                {{ gu }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="accuracy-graph-container" style="display: none;">
+                        <h4 id="gu-name"></h4>
+                        <img id="prediction-graph" src="" alt="예측 그래프" class="result-image">
+                        <div id="accuracy-metrics" class="accuracy-list"></div>
+                    </div>
+
+                    <div id="initial-message" style="text-align: center;">
+                        <p style="font-size: 1.2rem; color: #7f8c8d;">
+                            위 버튼을 클릭하여 각 구의 예측 결과와 정확도 지표를 확인하세요.
+                        </p>
                     </div>
                 </div>
             </div>
             {% endif %}
-        {% else %}
-            <div class="no-result-message">
-                <p>예측 결과 이미지가 없습니다.</p>
-            </div>
         {% endif %}
     {% else %}
         <div class="no-result-message">
@@ -366,5 +439,75 @@ mpl.use('Agg')   test
         </div>
     {% endif %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const guButtons = document.querySelectorAll('.gu-button');
+        const accuracyGraphContainer = document.querySelector('.accuracy-graph-container');
+        const guNameElement = document.getElementById('gu-name');
+        const predictionGraph = document.getElementById('prediction-graph');
+        const accuracyMetrics = document.getElementById('accuracy-metrics');
+        const initialMessage = document.getElementById('initial-message');
+        
+        const accuracyData = JSON.parse('{{ accuracy_json | safe }}' || '{}');
+        const graphUrls = JSON.parse('{{ graph_urls_json | safe }}' || '{}');
+
+        // 첫 번째 버튼을 활성화하고 데이터를 표시합니다.
+        if (guButtons.length > 0) {
+            guButtons[0].classList.add('active');
+            displayData(guButtons[0].getAttribute('data-gu'));
+            initialMessage.style.display = 'none';
+            accuracyGraphContainer.style.display = 'flex';
+        }
+
+        guButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                guButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                const gu = this.getAttribute('data-gu');
+                displayData(gu);
+            });
+        });
+
+        // 선택된 '구'에 대한 데이터를 표시하는 함수
+        function displayData(gu) {
+            const metrics = accuracyData[gu];
+            const graphUrl = graphUrls[gu];
+
+            // 데이터가 있는지 확인하고, 없으면 기본값으로 대체합니다.
+            const mae = metrics ? metrics.MAE : 'N/A';
+            const rmse = metrics ? metrics.RMSE : 'N/A';
+            const mape = metrics ? metrics.MAPE : 'N/A';
+
+            // 유한한 숫자인지 확인하고 소수점 2자리로 포맷하는 함수
+            function formatValue(value) {
+                return isFinite(value) ? value.toFixed(2) : value;
+            }
+            dataPrint = `
+                <div class="accuracy-list-item">
+                    <h4>MAE (평균 절대 오차)</h4>
+                    <p>${formatValue(mae)}</p>
+                </div>
+                <div class="accuracy-list-item">
+                    <h4>RMSE (평균 제곱근 오차)</h4>
+                    <p>${formatValue(rmse)}</p>
+                </div>
+                <div class="accuracy-list-item">
+                    <h4>MAPE (%) (평균 절대 백분율 오차)</h4>
+                    <p>${formatValue(mape)}</p>
+                </div>
+            `;
+            console.log(dataPrint)
+            accuracyMetrics.innerHTML = dataPrint;
+            guNameElement.textContent = gu;
+            predictionGraph.src = graphUrl;
+            predictionGraph.alt = `${gu} 시계열 예측 그래프`;
+            
+            //initialMessage.style.display = 'none';
+            accuracyGraphContainer.style.display = 'flex';
+            document.querySelector(".accuracy-graph-container").style.display = "block";
+        }
+    });
+</script>
 
 {% endblock %}
