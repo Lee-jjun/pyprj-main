@@ -13,6 +13,8 @@ urlpatterns = [
     path('district/', views.DistrictForecastPage.as_view(), name='district_forecast'),
     path('price-range/', views.PriceRangeForecastPage.as_view(), name='price_range_forecast'),
     path('deposit/', views.DepositForecastPage.as_view(), name='deposit_forecast'),
+    path('data-source/', views.DataSourcePage.as_view(), name='data_source'),
+
 ]
 
 # 개발 환경에서 정적 파일을 서빙하기 위한 설정 추가

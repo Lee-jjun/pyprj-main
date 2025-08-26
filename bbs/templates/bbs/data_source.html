@@ -1,0 +1,61 @@
+{% extends 'bbs/base.html' %}
+{% load static %}
+
+{% block title %}데이터 시각화{% endblock %}
+
+{% block content %}
+<div class="background-image"></div>
+<div class="content-wrapper">
+    <h2>부동산 전/월세 데이터 시각화</h2>
+    <div class="button-group">
+        <button onclick="fetchData('price')">가격대별 전,월세</button>
+        <button onclick="fetchData('area')">전용면적별 전,월세</button>
+    </div>
+    <div id="chart-container">
+        </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    function fetchData(plotType) {
+        // 로딩 화면 표시
+        showLoading();
+
+        // 현재 페이지 URL에 plot_type 파라미터만 추가하여 데이터 요청
+        fetch(window.location.href + `?plot_type=${plotType}`)
+            .then(response => response.json())
+            .then(data => {
+                const chartContainer = document.getElementById('chart-container');
+                const plotData = JSON.parse(data.plot_json);
+                Plotly.newPlot(chartContainer, plotData.data, plotData.layout);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            })
+            .finally(() => {
+                // 로딩 화면 숨기기
+                hideLoading();
+            });
+    }
+
+    function showLoading() {
+        // 로딩 화면을 추가하는 함수
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'loading-overlay';
+        loadingDiv.innerHTML = '<div class="loading-spinner"></div><p>데이터 불러오는 중...</p>';
+        document.body.appendChild(loadingDiv);
+    }
+
+    function hideLoading() {
+        const loadingDiv = document.getElementById('loading-overlay');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+    }
+
+    // 페이지 로드 시 초기 그래프 표시
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchData('price'); // 초기 페이지 로드 시 '가격대별' 그래프 표시
+    });
+</script>
+{% endblock %}

@@ -4,69 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ai-X APT | 부동산 전월세 가격 예측 서비스">
-    <meta name="author" content="Ai-X APT Team">
-    <title>{% block title %}Ai-X APT 부동산 예측 서비스{% endblock %}</title>
-
-    <link rel="stylesheet" href="{% static 'bbs/css/style.css' %}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <title>{% block title %}부동산 실거래 데이터의 활용{% endblock %}</title>
+    <!-- 외부 style.css 파일 연결 -->
+    <link rel="stylesheet" href="{% static 'bbs/style.css' %}">
 </head>
 <body>
-    <!-- 1. 로딩 화면 -->
-    <div id="loading-screen" class="hidden">
-        <div class="loading-spinner"></div>
-        <p>예측 중입니다... 잠시만 기다려주세요</p>
-    </div>
-
-    <div class="content-wrapper">
-        <header>
-            {% block header %}
-            {% if request.path != '/' %}
-                <h1>Ai-X APT 부동산 전/월세 예측 서비스</h1>
-            {% endif %}
-            {% endblock %}
-
+    <header>
+        <div class="header-content">
+            <a href="{% url 'bbs:index' %}" class="page-title-link">
+                <h1 class="page-title">부동산 실거래 데이터의 활용</h1>
+            </a>
             {% block navigation %}
-            <nav>
-                {% if request.path != '/' %}
-                    <a href="{% url 'bbs:index' %}">메인</a> |
-                {% endif %}
-                <a href="{% url 'bbs:price_range_forecast' %}">예측하기</a>
-            </nav>
+            <!-- 내비게이션 링크가 여기에 들어갑니다 -->
             {% endblock %}
-        </header>
-
-        <main>
-            {% block content %}
-            {% endblock %}
-        </main>
-    </div>    
-
-    <!-- 2. 풋터 -->
-    <footer>
-        <a href="{% url 'bbs:index' %}">© 2025 Ai-X APT</a>
-    </footer>
-
-    <!-- 3. 로딩 화면 제어 JS -->
-    <script>
-        function showLoading() {
-            const screen = document.getElementById('loading-screen');
-            if (screen) {
-                screen.classList.remove('hidden');
-                screen.classList.add('active');
-            }
-        }
-        function hideLoading() {
-            const screen = document.getElementById('loading-screen');
-            if (screen) {
-                screen.classList.remove('active');
-                // fade-out 부드럽게 → 약간의 delay 후 hidden 처리
-                setTimeout(() => screen.classList.add('hidden'), 300);
-            }
-        }
-    </script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+        </div>
+    </header>
+    <main>
+        {% block content %}
+        <!-- 페이지의 주요 콘텐츠가 여기에 들어갑니다 -->
+        {% endblock %}
+    </main>
 </body>
 </html>
