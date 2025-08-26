@@ -15,7 +15,7 @@ urlpatterns = [
     path('price-range/', views.PriceRangeForecastPage.as_view(), name='price_range_forecast'),
     path('deposit/', views.DepositForecastPage.as_view(), name='deposit_forecast'),
 
-    path('data-source/', views.DataSourcePage.as_view(), name='data_source'),
+    #path('data-source/', views.DataSourcePage.as_view(), name='data_source'),
     path('pfpa/', pfpa_views.PriceForPerAreaPage.as_view(), name='price_for_per_area_page'),
     path('pfpa/api/', pfpa_views.PriceForPerArea.as_view(), name='price_for_per_area'),
 
