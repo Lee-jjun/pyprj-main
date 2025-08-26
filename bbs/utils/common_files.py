@@ -30,12 +30,12 @@ class FileUtils:
 
     #차트 이미지로 만들기
     def savePngToPath(self,filename,closeFlag):
-        # filename = self.img_dir +filename
+        s_filename = self.img_dir + "/" +filename
         
         print("=============== filename ==============")
-        print({filename})
+        print({s_filename})
         print("=============== filename ==============")
-        plt.savefig(filename)
+        plt.savefig(s_filename)
         if closeFlag == True:
             plt.close()
         

@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import json
 from bbs.biz.price_for_per_area_line import engine
+
 class PriceForPerAreaPage(TemplateView):
     template_name = 'bbs/price_for_per_area.html'
     # def get_context_data(self, **kwargs):
@@ -48,8 +49,10 @@ class PriceForPerArea(View):
        
         try:
             # result = engine().to_dict(orient="records")
+            print(" >>>> 받은 JSON:")
             result = engine()
             result = convert(result)
+            
             # print(" ============================ ")
             return JsonResponse(result, safe=False)
         except Exception as e:
@@ -60,6 +63,7 @@ class PriceForPerArea(View):
         
     def post(self, request, *args, **kwargs):
         try:
+            print(" ==============dffdfdfd============== ")
             # 요청 JSON 읽기
             body = json.loads(request.body)
             print("받은 JSON:", body)

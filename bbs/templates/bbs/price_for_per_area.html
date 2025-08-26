@@ -357,7 +357,7 @@
         try {
             const modelSel   = document.getElementById('modelSelect');
             // 서버 URL을 호출
-            const response = await fetch('/pfpa/api/', {
+            const response = await fetch('/bbs/pfpa/api/', {
                 method: "POST",                      // POST 요청
                 headers: {
                     "Content-Type": "application/json",  // JSON 형식 명시
@@ -387,8 +387,9 @@
       showLoading();
 
       const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+console.log(csrftoken)
       try{
-        fetchModel(csrftoken)
+        await fetchModel(csrftoken)
       }catch(e){
         showError(e);
       }
