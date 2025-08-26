@@ -47,7 +47,7 @@ def run_analysis():
         df['계약년월'] = pd.to_datetime(df['계약년월'].astype(str), format='%Y%m')
 
         plt.rcParams['font.family'] = 'Malgun Gothic'
-        mpl.rcParams['axes.unicode_minus'] = False
+        mpl.rcParams['axes.unicode_minus'] = False 
         
         # 6. 구별, 금액대별 수요량 분석 및 시각화
         df_jeonse = df[df['전월세구분'] == '전세'].copy()
