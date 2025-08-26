@@ -1,61 +1,80 @@
-{% extends 'bbs/base.html' %}
 {% load static %}
 
-{% block title %}데이터 시각화{% endblock %}
-
-{% block content %}
-<div class="background-image"></div>
-<div class="content-wrapper">
-    <h2>부동산 전/월세 데이터 시각화</h2>
-    <div class="button-group">
-        <button onclick="fetchData('price')">가격대별 전,월세</button>
-        <button onclick="fetchData('area')">전용면적별 전,월세</button>
-    </div>
-    <div id="chart-container">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부동산 데이터 시각화</title>
+    <link rel="stylesheet" href="{% static 'css/data_source.css' %}">
+</head>
+<body>
+    <div class="background-image"></div>
+    <div class="content-wrapper">
+        <h2>부동산 전/월세 데이터 시각화</h2>
+        <!-- 데이터 시각화 페이지로 이동하는 버튼을 추가합니다. -->
+        <a href="{% url 'bbs:data_visualize' %}" class="visualize-button">
+            데이터 시각화 페이지로 이동
+        </a>
+        <div class="button-group">
+            <button onclick="fetchData('price_code')">가격대별 전,월세 건수</button>
+            <button onclick="fetchData('area_code')">전용면적별 전,월세 건수</button>
         </div>
-</div>
+        <div id="chart-container"></div>
+    </div>
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script>
-    function fetchData(plotType) {
-        // 로딩 화면 표시
-        showLoading();
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        // Django 뷰에서 전달받은 초기 데이터
+        const initialPlotData = JSON.parse('{{ initial_plot_json|safe }}');
+        
+        // 함수: 로딩 표시
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-overlay';
+            loadingDiv.innerHTML = '<div class="loading-spinner"></div><p>데이터 불러오는 중...</p>';
+            document.body.appendChild(loadingDiv);
+        }
 
-        // 현재 페이지 URL에 plot_type 파라미터만 추가하여 데이터 요청
-        fetch(window.location.href + `?plot_type=${plotType}`)
-            .then(response => response.json())
+        // 함수: 로딩 숨기기
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loading-overlay');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+        
+        // 함수: 데이터 가져오기 및 그래프 업데이트
+        function fetchData(plotType) {
+            showLoading();
+            // URL을 'get_data_source_data'로 변경하여 AJAX 요청을 보냅니다.
+            fetch(`{% url 'bbs:get_data_source_data' %}?plot_type=${plotType}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('네트워크 응답이 실패했습니다.');
+                }
+                return response.json();
+            })
             .then(data => {
                 const chartContainer = document.getElementById('chart-container');
                 const plotData = JSON.parse(data.plot_json);
                 Plotly.newPlot(chartContainer, plotData.data, plotData.layout);
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                console.error('데이터 가져오기 오류:', error);
+                const chartContainer = document.getElementById('chart-container');
+                chartContainer.innerHTML = '<p style="color:red;">데이터를 불러오는 데 실패했습니다.</p>';
             })
-            .finally(() => {
-                // 로딩 화면 숨기기
-                hideLoading();
-            });
-    }
-
-    function showLoading() {
-        // 로딩 화면을 추가하는 함수
-        const loadingDiv = document.createElement('div');
-        loadingDiv.id = 'loading-overlay';
-        loadingDiv.innerHTML = '<div class="loading-spinner"></div><p>데이터 불러오는 중...</p>';
-        document.body.appendChild(loadingDiv);
-    }
-
-    function hideLoading() {
-        const loadingDiv = document.getElementById('loading-overlay');
-        if (loadingDiv) {
-            loadingDiv.remove();
+            .finally(() => hideLoading());
         }
-    }
 
-    // 페이지 로드 시 초기 그래프 표시
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchData('price'); // 초기 페이지 로드 시 '가격대별' 그래프 표시
-    });
-</script>
-{% endblock %}
+        // 페이지 로드 시 초기 그래프를 그립니다.
+        document.addEventListener('DOMContentLoaded', () => {
+            if (initialPlotData) {
+                const chartContainer = document.getElementById('chart-container');
+                Plotly.newPlot(chartContainer, initialPlotData.data, initialPlotData.layout);
+            }
+        });
+    </script>
+</body>
+</html>

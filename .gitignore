@@ -32,3 +32,4 @@ venv/
 .env/
 
 #uploads/
+pyprj/ 

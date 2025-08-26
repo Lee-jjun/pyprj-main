@@ -1,0 +1,77 @@
+<!-- data_visualize.html (통합 및 개선) -->
+{% extends 'bbs/base.html' %}
+{% load static %}
+
+{% block title %}부동산 데이터 시각화{% endblock %}
+
+{% block content %}
+    <!-- 기존 data_source.css를 그대로 사용합니다. -->
+    <link rel="stylesheet" href="{% static 'css/data_source.css' %}">
+    
+    <div class="background-image"></div>
+    <div class="content-wrapper">
+        <h2>부동산 전/월세 데이터 시각화</h2>
+        
+        <div class="button-group">
+            <button onclick="fetchData('price_code')">가격대별 전/월세 건수</button>
+            <button onclick="fetchData('area_code')">전용면적별 전/월세 건수</button>
+        </div>
+        
+        <div id="chart-container"></div>
+    </div>
+
+    <!-- Plotly.js 라이브러리를 CDN으로 추가합니다. -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        // Django 뷰에서 전달받은 초기 데이터
+        const initialPlotData = JSON.parse('{{ initial_plot_json|safe }}');
+        
+        // 함수: 로딩 표시
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-overlay';
+            loadingDiv.innerHTML = '<div class="loading-spinner"></div><p>데이터 불러오는 중...</p>';
+            document.body.appendChild(loadingDiv);
+        }
+
+        // 함수: 로딩 숨기기
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loading-overlay');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+        
+        // 함수: 데이터 가져오기 및 그래프 업데이트
+        function fetchData(plotType) {
+            showLoading();
+            // Django 뷰에서 정의한 get_data_visualize_data URL을 사용합니다.
+            fetch(`{% url 'bbs:get_data_visualize_data' %}?plot_type=${plotType}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('네트워크 응답이 실패했습니다.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const chartContainer = document.getElementById('chart-container');
+                const plotData = JSON.parse(data.plot_json);
+                Plotly.newPlot(chartContainer, plotData.data, plotData.layout);
+            })
+            .catch(error => {
+                console.error('데이터 가져오기 오류:', error);
+                const chartContainer = document.getElementById('chart-container');
+                chartContainer.innerHTML = '<p style="color:red;">데이터를 불러오는 데 실패했습니다.</p>';
+            })
+            .finally(() => hideLoading());
+        }
+
+        // 페이지 로드 시 초기 그래프를 그립니다.
+        document.addEventListener('DOMContentLoaded', () => {
+            if (initialPlotData) {
+                const chartContainer = document.getElementById('chart-container');
+                Plotly.newPlot(chartContainer, initialPlotData.data, initialPlotData.layout);
+            }
+        });
+    </script>
+{% endblock %}
