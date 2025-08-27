@@ -10,29 +10,92 @@
 
     <link rel="stylesheet" href="{% static 'bbs/css/style.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+
+    <style>
+        /* === 헤더 버튼 스타일 === */
+        .main-header {
+            text-align: center;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .header-button {
+            display: inline-block;
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .header-button:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* === 로딩 화면 스타일 === */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: #fff;
+            z-index: 9999;
+        }
+        #loading-screen.hidden {
+            display: none;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255,255,255,0.3);
+            border-top: 6px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* === 풋터 스타일 === */
+        footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1.5em;        
+            font-weight: bold;
+            color: #ffffff;           
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.7); 
+        }
+    </style>
 </head>
 <body>
     <!-- 1. 로딩 화면 -->
     <div id="loading-screen" class="hidden">
         <div class="loading-spinner"></div>
-        <p>예측 중입니다... 잠시만 기다려주세요</p>
+        <p>예측중</p>
     </div>
 
     <div class="content-wrapper">
-        <header>
+        <header class="main-header">
             {% block header %}
-            {% if request.path != '/' %}
-                <h1>Ai-X APT 부동산 전/월세 예측 서비스</h1>
-            {% endif %}
-            {% endblock %}
-
-            {% block navigation %}
-            <nav>
-                {% if request.path != '/' %}
-                    <a href="{% url 'bbs:index' %}">메인</a> |
-                {% endif %}
-                <a href="{% url 'bbs:price_range_forecast' %}">예측하기</a>
-            </nav>
+                <a href="{% url 'bbs:index' %}" class="header-button">
+                    Ai-X APT 부동산 전/월세 예측 서비스
+                </a>
             {% endblock %}
         </header>
 
@@ -44,29 +107,37 @@
 
     <!-- 2. 풋터 -->
     <footer>
-        <a href="{% url 'bbs:index' %}">© 2025 Ai-X APT</a>
+        © 2025 Ai-X APT Team
     </footer>
 
     <!-- 3. 로딩 화면 제어 JS -->
     <script>
+        // 단순 로딩 표시
         function showLoading() {
             const screen = document.getElementById('loading-screen');
             if (screen) {
                 screen.classList.remove('hidden');
-                screen.classList.add('active');
             }
         }
         function hideLoading() {
             const screen = document.getElementById('loading-screen');
             if (screen) {
-                screen.classList.remove('active');
-                // fade-out 부드럽게 → 약간의 delay 후 hidden 처리
-                setTimeout(() => screen.classList.add('hidden'), 300);
+                screen.classList.add('hidden');
             }
         }
 
-      
+        // 로딩 표시 후 페이지 이동
+        function showLoadingAndRedirect(url) {
+            showLoading();
+            setTimeout(() => {
+                window.location.href = url;
+            }, 50);
+        }
 
+        // 뒤로가기/앞으로가기 시 로딩 화면 강제 숨김
+        window.addEventListener("pageshow", function(event) {
+            hideLoading();
+        });
     </script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
