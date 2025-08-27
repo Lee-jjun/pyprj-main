@@ -1,4 +1,4 @@
-={% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -12,40 +12,31 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
 
     <style>
-        /* === 헤더 스타일 === */
+        /* === 헤더 버튼 스타일 === */
         .main-header {
             text-align: center;
-            padding: 0;              /* 여백 제거 */
-            margin: 0;               /* 여백 제거 */
-            backdrop-filter: blur(6px); 
-            -webkit-backdrop-filter: blur(6px);
+            margin: 0;
+            padding: 20px 0;
         }
 
-        .main-header h1 {
-            font-size: 3em;
-            font-weight: bold;
-            margin: 0;               /* 위아래 여백 제거 */
-            padding: 20px 0;         /* 글자 위아래 여백만 유지 */
-            color: #fff;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+        .header-button {
             display: inline-block;
-        }
-
-        /* 헤더 밑줄 제거 (기존 after 라인 삭제) */
-        .main-header h1::after {
-            content: none;
-        }
-
-        /* 헤더 링크 */
-        .header-link {
+            font-size: 2.2em;
+            font-weight: bold;
             color: #fff;
             text-decoration: none;
-            transition: border-bottom 0.3s ease;
-            padding-bottom: 4px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+            transition: transform 0.3s ease, background 0.3s ease;
         }
 
-        .header-link:hover {
-            border-bottom: 2px solid #fff; /* hover 시만 밑줄 */
+        .header-button:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
         }
 
         /* === 풋터 스타일 === */
@@ -72,11 +63,9 @@
     <div class="content-wrapper">
         <header class="main-header">
             {% block header %}
-                <h1>
-                    <a href="{% url 'bbs:index' %}" class="header-link">
-                        Ai-X APT 부동산 전/월세 예측 서비스
-                    </a>
-                </h1>
+                <a href="{% url 'bbs:index' %}" class="header-button">
+                    Ai-X APT 부동산 전/월세 예측 서비스
+                </a>
             {% endblock %}
         </header>
 
