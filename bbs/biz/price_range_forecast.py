@@ -74,8 +74,8 @@ def run_analysis():
         buffer.seek(0)
         plt.close()
         result_dict['images'] = [f'data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}']
-        result_dict['demand_jeonse_html'] = demand_jeonse.head().to_html(classes=['accuracy-table'])
-        result_dict['demand_wolse_html'] = demand_wolse.head().to_html(classes=['accuracy-table'])
+        result_dict['demand_jeonse_html'] = demand_jeonse.to_html(classes=['accuracy-table'])
+        result_dict['demand_wolse_html'] = demand_wolse.to_html(classes=['accuracy-table'])
         
         # 7. 구별 수요 패턴 군집화
         demand_by_gu = df.groupby(['구', '금액대']).size().unstack(fill_value=0)

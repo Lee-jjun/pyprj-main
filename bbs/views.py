@@ -230,12 +230,9 @@ class PriceRangeForecastPage(TemplateView):
     template_name = 'bbs/price_range_forecast.html'
 
     def get_context_data(self, **kwargs):
-        print("CALLED PriceRangeForecastPage ====================")
         context = super().get_context_data(**kwargs)
-        print("CALLED PriceRangeForecastPage 1 ====================")
         # run_analysis 함수 실행
         result = run_analysis()
-        print(f"CALLED PriceRan{result}")
         # JavaScript가 안전하게 사용할 수 있도록 JSON 데이터를 직렬화합니다.
         # 이전에 발생했던 오류를 수정하기 위해 json.dumps를 사용합니다.
         if 'accuracy' in result and isinstance(result['accuracy'], dict):
@@ -293,35 +290,74 @@ class DepositForecastPage(TemplateView):
 
     def post(self, request, *args, **kwargs):
         deposit_type = request.POST.get("deposit_type")
-
-        result = {
-            "labels": ["전세", "월세"],
-            "datasets": [{
-                "label": "예측 가격",
-                "data": [15000, 900],
-                "borderColor": "rgb(255, 206, 86)",
-                "tension": 0.1
-            }]
-        }
+        result = {"labels": ["전세", "월세"], "datasets": [{"label": "예측 가격","data": [15000, 900],"borderColor": "rgb(255, 206, 86)","tension": 0.1}]}
         predicted_price = result["datasets"][0]["data"][-1]
-
-        return render(request, self.template_name, {
-            "result": result,
-            "predicted_price": predicted_price,
-            "deposit_type": deposit_type,
-        })
+        return render(request, self.template_name, {"result": result, "predicted_price": predicted_price, "deposit_type": deposit_type})
 
 #####################################
 # 메인 페이지
 #####################################
 class MainPage(TemplateView):
-    print("CALLED MainPage ====================")
     template_name = 'bbs/main_page.html'
 
+#####################################
+# 데이터 시각화 페이지 뷰
+# 기존의 DataSourcePage와 data_source_view를 통합하고
+# 새로운 AJAX 뷰를 추가하여 로직을 분리합니다.
+#####################################
+class DataVisualizePage(TemplateView):
+    template_name = 'bbs/data_visualize.html'
 
-#####################################
-# js 가져오는 함수
-#####################################
-def index(request):
-    print("CALLED index ====================")
-    return render(request, 'home.html')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # 페이지 로드 시 기본 그래프 데이터를 미리 생성하여 템플릿에 전달합니다.
+        # 이렇게 하면 초기 로딩 시 AJAX 요청이 한 번 더 발생하는 것을 방지할 수 있습니다.
+        plot_type = 'price_code'
+        initial_data = self._get_plot_data(plot_type)
+        context['initial_plot_json'] = json.dumps(initial_data, cls=plotly.utils.PlotlyJSONEncoder)
+        
+        return context
+
+    def _get_plot_data(self, plot_type):
+        """
+        그래프 종류에 따라 Plotly 데이터와 레이아웃을 생성하는 헬퍼 함수
+        """
+        if plot_type == 'price_code':
+            x_data = ['~1억', '1억~3억', '3억~5억', '5억 이상']
+            y_data = [400, 750, 600, 250]
+            title = '가격대별 전/월세 건수'
+            y_axis_title = '건수'
+        else:  # 'area_code'
+            x_data = ['~60㎡', '60~85㎡', '85~120㎡', '120㎡ 이상']
+            y_data = [500, 800, 300, 100]
+            title = '전용면적별 전/월세 건수'
+            y_axis_title = '건수'
+
+        # Plotly 그래프 생성
+        trace = go.Bar(x=x_data, y=y_data, marker_color='rgba(255, 255, 255, 0.5)')
+        layout = go.Layout(
+            title=title,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white'),
+            xaxis=dict(title='구분', showgrid=False),
+            yaxis=dict(title=y_axis_title, showgrid=True, gridcolor='rgba(255,255,255,0.2)'),
+        )
+        fig = go.Figure(data=[trace], layout=layout)
+        return fig
+
+@csrf_exempt
+def get_data_visualize_data(request):
+    """
+    AJAX 요청을 처리하여 그래프 데이터를 JSON으로 반환합니다.
+    _get_plot_data 헬퍼 함수를 재사용하여 로직을 통합합니다.
+    """
+    plot_type = request.GET.get('plot_type', 'price_code')
+    
+    # DataVisualizePage의 인스턴스를 생성하여 헬퍼 함수를 호출합니다.
+    viz_page_instance = DataVisualizePage()
+    fig = viz_page_instance._get_plot_data(plot_type)
+    
+    graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return JsonResponse({'plot_json': graph_json})

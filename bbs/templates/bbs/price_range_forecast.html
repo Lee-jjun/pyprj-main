@@ -4,6 +4,11 @@
 {% block title %}가격대별 전월세 예측{% endblock %}
 
 {% block content %}
+네, 요청하신 대로 버튼을 클릭했을 때 표가 가운데로 나타나고, 테이블이 짤리지 않는 기능이 포함된 price_prediction.html의 CSS 전체 코드를 제공해 드릴게요.
+
+price_prediction.html 전체 CSS 코드
+HTML
+
 <style>
     /* 이 부분은 웹 페이지의 전체적인 디자인을 담당하는 CSS 코드입니다. */
     :root {
@@ -114,41 +119,77 @@
     /* 테이블 컨테이너 스타일 */
     .table-container {
         width: 100%;
-        overflow-x: auto;
+        overflow-x: hidden; /* 스크롤바를 숨깁니다. */
         border: none;
     }
 
+    /* 테이블 스타일 (스크롤 없이 한눈에 보이도록 강제 조정) */
     .table-container table {
-        width: 100%; /* 테이블 너비는 유지 */
-        font-size: 0.8rem; /* 글자 크기를 줄여서 표를 더 작게 만듭니다 */
-        border-collapse: collapse; /* 셀 경계를 하나로 합칩니다 */
-        border: 1px solid var(--border-color); /* 테이블 전체에 단일 테두리를 설정합니다 */
-        border-radius: 6px; /* 모서리를 둥글게 만듭니다 */
-        overflow: hidden; /* 둥근 모서리에 맞게 내용이 잘리도록 합니다 */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 부드러운 그림자 효과를 추가합니다 */
+        width: 100%;
+        table-layout: fixed; /* 테이블 너비를 고정하고 열을 균등하게 분배합니다. */
+        font-size: 0.7rem; /* 폰트 크기를 더 줄여서 모든 내용이 보이게 합니다. */
+        border-collapse: collapse;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
     .table-container th, 
     .table-container td {
-        padding: 8px 10px; /* 셀 내부 여백을 줄입니다 */
-        text-align: left; /* 텍스트를 왼쪽 정렬합니다 */
-        border: none; /* 셀 내부의 기존 테두리를 제거합니다 */
+        padding: 4px; /* 셀 내부 여백을 더 줄입니다. */
+        text-align: left;
+        border: none;
+        word-wrap: break-word; /* 셀 내용이 너무 길 경우 강제로 줄바꿈합니다. */
     }
 
     .table-container th {
-        background-color: #f7f7f7; /* 헤더 배경색을 밝은 회색으로 설정합니다. */
-        font-weight: 600; /* 글씨를 더 굵게 만듭니다. */
+        background-color: #f7f7f7;
+        font-weight: 600;
+    }
+
+    /* 구별 군집 분류 데이터 전용 스타일 */
+    #cluster-table-container {
+        width: 100%;
+        overflow-x: auto;
+        border: none;
+        display: flex;
+        justify-content: center;
+    }
+
+    #cluster-table-container table {
+        max-width: 100%;
+        table-layout: auto;
+        font-size: 0.8rem;
+        border-collapse: collapse;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    #cluster-table-container th, 
+    #cluster-table-container td {
+        padding: 8px 12px;
+        text-align: left;
+        border: none;
+        word-wrap: normal;
+        white-space: nowrap;
+    }
+
+    #cluster-table-container th {
+        background-color: #f7f7f7;
+        font-weight: 600;
     }
 
     /* 정확도 목록 컨테이너 스타일 */
     .accuracy-list {
         width: 100%;
         margin-top: 30px;
-        /* 기존 테두리 제거 */
         border: none;
         border-radius: 6px;
         overflow: hidden;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 경계선 대신 그림자 효과 추가 */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
     .accuracy-list-item {
         display: flex;
@@ -229,12 +270,43 @@
     a:hover {
         color: var(--link-hover);
     }
+    
+    /* 테이블 버튼 컨테이너 (버튼을 나란히 배치) */
+    .table-button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    /* 각 테이블 섹션 (개별 버튼과 표를 감쌈) */
+    .table-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        min-width: 300px;
+        text-align: center;
+    }
+    
+    /* 표 컨테이너 (가운데 정렬) */
+    #jeonse-table-container,
+    #wolse-table-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
     /* 반응형 디자인 */
     @media (max-width: 768px) {
         .notebook-container { padding: 20px 10px; }
         .title { font-size: 2rem; margin-bottom: 30px; }
         .cell { margin-bottom: 20px; }
+        .table-button-container { flex-direction: column; align-items: center; }
+        .table-section { width: 100%; }
     }
 </style>
 
@@ -302,24 +374,32 @@ df_wolse = df[df['전월세구분'] == '월세'].copy()
 demand_jeonse = df_jeonse.groupby(['구', '금액대']).size().unstack(fill_value=0)
 demand_wolse = df_wolse.groupby(['구', '금액대']).size().unstack(fill_value=0)
                     </code></pre>
-                </div>
                 <div class="output-cell">
-                    <h4>전세 수요량 데이터</h4>
-                    <div class="table-container">
-                        {{ result.demand_jeonse_html|safe }}
+                        <h3>구별 전월세 수요량 데이터</h3> 
+                        
+                        <div class="table-button-container">
+                            <button id="show-jeonse-btn" class="gu-button">전세 데이터 출력</button>
+                            <button id="show-wolse-btn" class="gu-button">월세 데이터 출력</button>
+                        </div>
+
+                        <div id="jeonse-table-container" style="display: none;">
+                            <h4>전세 수요량 데이터</h4>
+                            <div class="table-container">
+                                {{ result.demand_jeonse_html|safe }}
+                            </div>
+                        </div>
+                        
+                        <div id="wolse-table-container" style="display: none;">
+                            <h4>월세 수요량 데이터</h4>
+                            <div class="table-container">
+                                {{ result.demand_wolse_html|safe }}
+                            </div>
+                        </div>
+                        <h3>구별 수요량 분석 결과</h3>
+                        <a href="{{ result.images.0 }}" target="_blank">
+                            <img src="{{ result.images.0 }}" alt="구별 수요량 히트맵" class="result-image">
+                        </a>
                     </div>
-                    <h4>월세 수요량 데이터</h4>
-                    <div class="table-container">
-                        {{ result.demand_wolse_html|safe }}
-                    </div>
-                    <h3>구별 수요량 분석 결과</h3>
-                    <a href="{{ result.images.0 }}" target="_blank">
-                        <img src="{{ result.images.0 }}" alt="구별 수요량 히트맵" class="result-image">
-                    </a>
-                    {% if result.demand_jeonse_html and result.demand_wolse_html %}
-                    <br>
-                    {% endif %}
-                </div>
             </div>
 
             <div class="cell">
@@ -342,7 +422,7 @@ reduced_data = pca.fit_transform(scaled_demand)
                 </div>
                 <div class="output-cell">
                     <h4>구별 군집 분류 데이터</h4>
-                    <div class="table-container">
+                    <div id="cluster-table-container">
                         {{ result.cluster_html|safe }}
                     </div>
                     <br>
@@ -350,8 +430,6 @@ reduced_data = pca.fit_transform(scaled_demand)
                     <a href="{{ result.images.1 }}" target="_blank">
                         <img src="{{ result.images.1 }}" alt="구별 수요 패턴 군집화" class="result-image">
                     </a>
-                    {% if result.cluster_html %}
-                    {% endif %}
                 </div>
             </div>
 
@@ -396,7 +474,7 @@ for i, gu in enumerate(gu_list):
         plt.ylabel('거래 건수', fontsize=12)
         plt.legend(title='데이터 유형', loc='upper left', fontsize=10)
         plt.xticks(rotation=45, ha='right')
-                    
+                        
     else:
         plt.text(0.5, 0.5, '데이터 부족', ha='center', va='center', fontsize=20, color='red', transform=plt.gca().transAxes)
         plt.title(f'{gu} 거래량', fontsize=15)
@@ -449,6 +527,36 @@ for i, gu in enumerate(gu_list):
         const accuracyMetrics = document.getElementById('accuracy-metrics');
         const initialMessage = document.getElementById('initial-message');
         
+        // 전세 버튼과 표
+        const showJeonseBtn = document.getElementById('show-jeonse-btn');
+        const jeonseTableDiv = document.getElementById('jeonse-table-container');
+
+        // 월세 버튼과 표
+        const showWolseBtn = document.getElementById('show-wolse-btn');
+        const wolseTableDiv = document.getElementById('wolse-table-container');
+
+        // 전세 버튼 클릭 이벤트
+        showJeonseBtn.addEventListener('click', function() {
+            // 전세 표가 보이지 않으면 보이게 하고, 월세 표는 숨깁니다.
+            if (jeonseTableDiv.style.display === 'none') {
+                jeonseTableDiv.style.display = 'block';
+                wolseTableDiv.style.display = 'none'; // 월세 표 숨기기
+            } else {
+                jeonseTableDiv.style.display = 'none';
+            }
+        });
+
+        // 월세 버튼 클릭 이벤트
+        showWolseBtn.addEventListener('click', function() {
+            // 월세 표가 보이지 않으면 보이게 하고, 전세 표는 숨깁니다.
+            if (wolseTableDiv.style.display === 'none') {
+                wolseTableDiv.style.display = 'block';
+                jeonseTableDiv.style.display = 'none'; // 전세 표 숨기기
+            } else {
+                wolseTableDiv.style.display = 'none';
+            }
+        });
+
         const accuracyData = JSON.parse('{{ accuracy_json | safe }}' || '{}');
         const graphUrls = JSON.parse('{{ graph_urls_json | safe }}' || '{}');
 
