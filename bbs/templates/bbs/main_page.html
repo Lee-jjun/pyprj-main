@@ -66,11 +66,15 @@
 <div class="background-image"></div>
 
 <div class="button-container">
-    <a href="{% url 'bbs:price_range_forecast' %}" class="main-button">
+    <a href="{% url 'bbs:price_range_forecast' %}" 
+       class="main-button" 
+       onclick="showLoading()">
         <span>전/월세 가격</span>
         <span>예측하기</span>
     </a>
-    <a href="{% url 'bbs:price_for_per_area_page' %}" class="main-button">
+    <a href="{% url 'bbs:price_for_per_area_page' %}" 
+       class="main-button" 
+       onclick="showLoading()">
         <span>전용면적</span>
         <span>예측하기</span>
     </a>

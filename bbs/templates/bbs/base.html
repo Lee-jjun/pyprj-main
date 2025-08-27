@@ -39,6 +39,36 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
+        /* === 로딩 화면 스타일 === */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: #fff;
+            z-index: 9999;
+        }
+        #loading-screen.hidden {
+            display: none;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255,255,255,0.3);
+            border-top: 6px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
         /* === 풋터 스타일 === */
         footer {
             position: fixed;
@@ -57,7 +87,7 @@
     <!-- 1. 로딩 화면 -->
     <div id="loading-screen" class="hidden">
         <div class="loading-spinner"></div>
-        <p>예측 중입니다... 잠시만 기다려주세요</p>
+        <p>예측중</p>
     </div>
 
     <div class="content-wrapper">
@@ -82,19 +112,27 @@
 
     <!-- 3. 로딩 화면 제어 JS -->
     <script>
+        // 단순 로딩 표시
         function showLoading() {
             const screen = document.getElementById('loading-screen');
             if (screen) {
                 screen.classList.remove('hidden');
-                screen.classList.add('active');
             }
         }
         function hideLoading() {
             const screen = document.getElementById('loading-screen');
             if (screen) {
-                screen.classList.remove('active');
-                setTimeout(() => screen.classList.add('hidden'), 300);
+                screen.classList.add('hidden');
             }
+        }
+
+        // 로딩 표시 후 페이지 이동
+        function showLoadingAndRedirect(url) {
+            showLoading();
+            // 로딩이 그려질 수 있도록 다음 tick에 페이지 이동
+            setTimeout(() => {
+                window.location.href = url;
+            }, 50);
         }
     </script>
     
