@@ -3,51 +3,9 @@
 
 {% block title %}부동산 전/월세 예측 서비스{% endblock %}
 
-{% block navigation %}
-<nav class="main-nav">
-    <!-- 모든 내비게이션 링크에 '팀 내용' 블록과 이미지 추가 -->
-    <a href="{% url 'bbs:index' %}" class="nav-link" id="overview-link">
-        프로젝트 개요
-        <div class="team-details-block">
-            <img src="{% static 'images/1.jpg' %}" alt="팀 이미지">
-            프로젝트 내용 작성 중입니다
-        </div>
-    </a>
-    <a href="{% url 'bbs:price_range_forecast' %}" class="nav-link">
-        실거래 데이터로 전, 월세 가격 예측하기
-        <div class="team-details-block">
-            <img src="{% static 'images/1.jpg' %}" alt="팀 이미지">
-            가격대별 전, 월세 예측
-        </div>
-    </a>
-    <a href="{% url 'bbs:price_for_per_area_page' %}" class="nav-link">
-        실거래 데이터로 전, 월세 전용면적 예측하기
-        <div class="team-details-block">
-            <img src="{% static 'images/1.jpg' %}" alt="팀 이미지">
-            전용면적의 전,월세 예측
-        </div>
-    </a>
-    <!--  --% url 'bbs:data_visualize' % }-->
-    <a href="/" class="nav-link">
-        데이터 소스
-        <div class="team-details-block">
-            <img src="{% static 'images/1.jpg' %}" alt="팀 이미지">
-            각 목차별 소스를 확인하기
-        </div>
-    </a>
-    <a href="{% url 'bbs:monthly_forecast' %}" class="nav-link">
-        팀 소개
-        <div class="team-details-block">
-            <img src="{% static 'images/1.jpg' %}" alt="팀 이미지">
-            프로젝트 내용 작성 중입니다
-        </div>
-    </a>
-</nav>
-{% endblock %}
-
 {% block content %}
 <style>
-    /* 배경 이미지 설정 */
+    /* 배경 이미지 */
     .background-image {
         position: absolute;
         top: 0;
@@ -57,117 +15,52 @@
         background-image: url("{% static 'images/apt2-1.jpg' %}");
         background-size: cover;
         background-position: center;
-        filter: brightness(0.7); /* 이미지를 약간 어둡게 하여 텍스트 가독성 높임 */
+        filter: brightness(0.7);
         z-index: -1;
     }
 
-    /* 네비게이션 링크 컨테이너 스타일 */
-    .main-nav {
-        position: fixed;
-        top: 100px;
-        left: 0;
-        width: 40vw;
-        height: calc(100vh - 40px);
+    /* 중앙 버튼 컨테이너 */
+    .button-container {
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 15px;
-        padding: 20px;
-        box-sizing: border-box;
-        z-index: 11;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        gap: 40px;
+        z-index: 5;
     }
 
-    /* 네비게이션 링크 블럭 스타일 */
-    .nav-link {
-        display: block;
-        position: relative;
-        width: 85%;
-        height: 100px;
-        text-align: left;
-        padding: 12px 18px;
-        background-color: rgba(255, 255, 255, 0.5);
-        color: #000000;
-        text-decoration: none;
-        font-size: 1.4em;
-        font-weight: bold;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-        box-sizing: border-box;
-    }
-
-    .nav-link:hover {
-        transform: translateY(-5px);
-        background-color: rgba(255, 255, 255, 0.8);
-    }
-
-    /* '팀 내용' 블록 스타일 */
-    .team-details-block {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        width: 50%;
-        height: 33px;
-        background-color: rgba(255, 255, 255, 0.8);
-        color: #000000;
+    /* 버튼 스타일 */
+    .main-button {
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 0.8em;
-        font-weight: normal;
-        border-radius: 5px;
-        padding: 5px;
-        box-sizing: border-box;
-    }
-
-    .team-details-block img {
-        height: 100%;
-        border-radius: 50%;
-        margin-right: 5px;
-    }
-
-    /* 메인 제목 블록 스타일 */
-    .main-title-container {
-        position: absolute;
-        top: 40%;
-        right: 5%;
-        transform: translateY(-50%);
-        text-align: right;
-        z-index: 5;
-        color: #ffffff;
-    }
-
-    .main-title {
-        font-size: 3.5em;
+        width: 280px;
+        height: 100px;
+        background-color: rgba(255, 255, 255, 0.8);
+        color: #000;
+        font-size: 1.6em;
         font-weight: bold;
-        margin-bottom: 5px;
+        text-decoration: none;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
-    .main-subtitle {
-        font-size: 1.5em;
-        font-weight: normal;
-        color: #ffffff;
+    .main-button:hover {
+        transform: translateY(-8px);
+        background-color: rgba(255, 255, 255, 1);
     }
 </style>
 
 <div class="background-image"></div>
-<div class="main-title-container">
-    <h1 class="main-title">AI-X APT</h1>
-    <h2 class="main-subtitle">부동산 실거래 데이터를 활용할 수 있는 B2B 방안</h2>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            const teamDetails = link.querySelector('.team-details-block');
-            if (teamDetails) {
-                link.addEventListener('mouseenter', () => {
-                    teamDetails.style.display = 'flex';
-                });
-            }
-        });
-    });
-</script>
+<div class="button-container">
+    <a href="{% url 'bbs:price_range_forecast' %}" class="main-button">
+        전/월세 가격 예측하기
+    </a>
+    <a href="{% url 'bbs:price_for_per_area_page' %}" class="main-button">
+        전용면적 예측하기
+    </a>
+</div>
 {% endblock %}
