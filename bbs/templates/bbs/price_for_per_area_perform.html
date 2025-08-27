@@ -187,6 +187,7 @@
     }
 
     function renderResult(data) {
+      const formatNumber = n => new Intl.NumberFormat('ko-KR').format(n);
       let html = '';
       for (let size in data) {
         const jeonse = data[size].jeonse;
@@ -204,9 +205,9 @@
                 </div>
               </div>
               <table>
-                <thead><tr><th>실제값</th><th>예측값</th></tr></thead>
+                <thead><tr><th>년-월</th><th>실제값</th><th>예측값</th></tr></thead>
                 <tbody>
-                  ${jeonse["실제값 리스트"].map((v,i)=>`<tr><td>${v}</td><td>${jeonse["예측값 리스트"][i]}</td></tr>`).join('')}
+                  ${jeonse["실제값 리스트"].map((v,i)=>`<tr><td>${wolse["년-월"][i]}</td><td style="text-align:right;">${formatNumber(v)}</td><td style="text-align:right;">${formatNumber(jeonse["예측값 리스트"][i])}</td></tr>`).join('')}
                 </tbody>
               </table>
               <div class="chart-section">
@@ -224,9 +225,9 @@
                 </div>
               </div>
               <table>
-                <thead><tr><th>실제값</th><th>예측값</th></tr></thead>
+                <thead><tr><th>년-월</th><th>실제값</th><th>예측값</th></tr></thead>
                 <tbody>
-                  ${wolse["실제값 리스트"].map((v,i)=>`<tr><td>${v}</td><td>${wolse["예측값 리스트"][i]}</td></tr>`).join('')}
+                  ${wolse["실제값 리스트"].map((v,i)=>`<tr><td>${wolse["년-월"][i]}</td><td style="text-align:right;">${formatNumber(v)}</td><td style="text-align:right;">${formatNumber(wolse["예측값 리스트"][i])}</td></tr>`).join('')}
                 </tbody>
               </table>
               <div class="chart-section">

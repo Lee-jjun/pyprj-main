@@ -7,8 +7,8 @@ from matplotlib import font_manager, rc
 
 from bbs.utils.common_files import FileUtils
 from bbs.utils.fonts import setup_matplotlib_fonts
-import json
-
+# import json
+import traceback
 # def engine1():
 #     ##################################################
 #     # 1. 데이터 불러오기 및 전처리
@@ -730,7 +730,6 @@ def regression_prediction():
     Linear Regression 모델을 사용하여 아파트 전월세 수요를 예측하고, 
     결과를 특정 형식의 딕셔너리로 반환하는 함수입니다.
     """
-    print(" regression_prediction ")
     ##################################################
     # 1. 데이터 불러오기 및 전처리
     ##################################################
@@ -759,7 +758,7 @@ def regression_prediction():
     monthly_demand = pd.merge(monthly_demand, monthly_demand_full[['월', 'month_index']], on='월', how='left')
 
     # 예측할 월 (2025년 10월)의 인덱스 계산
-    predict_date_index = (pd.to_datetime('2025-10-01').year - monthly_demand['월'].min().year) * 12 + (pd.to_datetime('2025-10-01').month - monthly_demand['월'].min().month)
+    predict_date_index = (pd.to_datetime('2025-10').year - monthly_demand['월'].min().year) * 12 + (pd.to_datetime('2025-10').month - monthly_demand['월'].min().month)
 
     print("--- 면적 구간별 Linear Regression 예측 결과 및 성능 지표 ---")
 
@@ -767,23 +766,38 @@ def regression_prediction():
     final_results = {'전세': [], '월세': []}
 
     for rent_type in ['전세', '월세']:
-        print(f"\n==================== {rent_type} ====================")
+        print(f"\n==================== <<{rent_type}>> ====================")
         for area_label in labels:
             subset_df = monthly_demand[(monthly_demand['전월세구분'] == rent_type) & (monthly_demand['면적_구간'] == area_label)].copy()
-
+            
+            print("========== 데이터 정보 ==========")
+            print(subset_df)
+            # print(f"{list(subset_df["월"].dt.strftime("%Y-%m"))}")
+            print(subset_df.info())
+            print("========== 데이터 정보 ==========")
             if len(subset_df) < 6:
                 print(f"  > {area_label} : 데이터 부족으로 예측 및 평가 불가")
                 continue
 
             X = subset_df[['month_index']]
             y = subset_df['수요량']
-            
+          
+            print(" === X값['month_index'] ==")
+            print(X)
+            print(" === y값['수요량']  ==")
+            print(y)
             # 시계열 데이터 분할 (마지막 3개월을 테스트 데이터로 사용)
             test_size = 3
             X_train = X[:-test_size]
             X_test = X[-test_size:]
             y_train = y[:-test_size]
             y_test = y[-test_size:]
+            
+            print(" 시계열 데이터 분할 (마지막 3개월을 테스트 데이터로 사용)")
+            print(f"X_train ={X_train}")
+            print(f"X_test ={X_test}")
+            print(f"y_train ={y_train}")
+            print(f"y_test ={y_test}")
             
             model = LinearRegression()
             model.fit(X_train, y_train)
@@ -808,6 +822,7 @@ def regression_prediction():
             print(f"  [Linear Regression] 2025년 10월 예측: {int(predicted_demand_future)}건")
             print(f"  - 훈련 성능: RMSE={rmse_train:.2f}, R²={r2_train:.2f}, MAE={mae_train:.2f}")
             print(f"  - 테스트 성능: RMSE={rmse_test:.2f}, R²={r2_test:.2f}, MAE={mae_test:.2f}")
+            print(f'  - "년-월": { list(subset_df["월"].dt.strftime("%Y-%m"))}')
             print(f"  - 과적합 여부: {overfitting_status}")
 
             # 예측값과 실제값 차트 시각화 및 저장
@@ -821,33 +836,37 @@ def regression_prediction():
             plt.grid(True)
 
             image_filename = f"linear_regression_{rent_type}_{area_label}.png"
-           
             image_url = FileUtils().savePngToPath(image_filename)
            
             # 요청된 형식으로 데이터 구조화
             area_result = {
                 area_label: [
-                    {"훈련성능": f"RMSE={rmse_train:.2f}, R²={r2_train:.2f}, MAE={mae_train:.2f}"},
-                    {"테스트 성능": f"RMSE={rmse_test:.2f}, R²={r2_test:.2f}, MAE={mae_test:.2f}"},
-                    {"과적합 여부": overfitting_status},
+                    {"훈련성능"     : f"RMSE={rmse_train:.2f}, R²={r2_train:.2f}, MAE={mae_train:.2f}"},
+                    {"테스트 성능"  : f"RMSE={rmse_test:.2f}, R²={r2_test:.2f}, MAE={mae_test:.2f}"},
+                    {"과적합 여부"  : overfitting_status},
                     {"실제값 리스트": list(y.astype(int))},
                     {"예측값 리스트": [int(val) for val in full_y_pred]},
-                    {"image_url": image_url}
+                    {"image_url"  : image_url},
+                    {"년-월"       : list(subset_df["월"].dt.strftime("%Y-%m"))},
                 ]
             }
+            
             final_results[rent_type].append(area_result)
-    
+      
     # 최종 2025년 10월 예측 결과 시각화
     fig, axes = plt.subplots(1, 2, figsize=(18, 7))
     fig.suptitle('2025년 10월 Linear Regression 최종 예측 (면적 구간별)', fontsize=18)
     
     predicted_demands_jeonse = {label: 0 for label in labels}
     predicted_demands_wolse = {label: 0 for label in labels}
-
-    for result in final_results['전세']:
-        for area, data in result.items():
-            predicted_demands_jeonse[area] = int(data[4]['예측값 리스트'][-1])
-
+    try:    
+        for result in final_results['전세']:
+            for area, data in result.items():
+                predicted_demands_jeonse[area] = int(data[4]['예측값 리스트'][-1])
+    except Exception as e:
+        print("예외 발생:", str(e))  # 에러 메시지 출력
+        traceback.print_exc()       # 전체 스택 추적 출력
+        
     for result in final_results['월세']:
         for area, data in result.items():
             predicted_demands_wolse[area] = int(data[4]['예측값 리스트'][-1])
@@ -870,9 +889,7 @@ def regression_prediction():
     # final_image_url = FileUtils().savePngToPath("final_linear_regression.png")
     jeonse = extract_full(final_results,"전세")
     wolse  = extract_full(final_results,"월세")
-    # print("#################extract_full#########################")
-    # 전세 , 월세를 리스트로 묶기
-    # print("#################extract_full#########################")
+
     merged = {}
     for area in jeonse.keys():
         merged[area] = {
@@ -894,6 +911,7 @@ def extract_full(data,category: str):
         for size, details in item.items():
             entry = {}
             for d in details:
+         
                 if "훈련성능" in d:
                     entry["훈련성능"] = d["훈련성능"]
                 if "테스트 성능" in d:
@@ -904,6 +922,8 @@ def extract_full(data,category: str):
                     entry["실제값 리스트"] = d["실제값 리스트"]
                 if "예측값 리스트" in d:
                     entry["예측값 리스트"] = d["예측값 리스트"]
+                if "년-월" in d:
+                    entry["년-월"] = d["년-월"]
                 if "image_url" in d:
                     entry["image_url"] = d["image_url"]
             results[size] = entry

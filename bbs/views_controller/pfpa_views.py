@@ -68,8 +68,11 @@ class PriceForPerArea(View):
             print("받은 JSON:", body)
 
             eventType = body.get("TYPE")
-            # engine 호출 (예시)
-            result = engine(eventType)
+            try:
+                # engine 호출 (예시)
+                result = engine(eventType)
+            except Exception as e:
+                print(e)
             result = convert(result)
             return JsonResponse(result, safe=False)
         except Exception as e:

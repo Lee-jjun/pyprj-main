@@ -33,3 +33,4 @@ venv/
 
 #uploads/
 pyprj/ 
+bbs/static/images/*.png
