@@ -56,16 +56,25 @@
       border: 1px solid var(--border);
       border-radius: 16px; padding: 16px 16px; box-shadow: 0 6px 20px rgba(0,0,0,.25);
     }
-    .heading { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
-    .sub { color: var(--muted); font-size: 14px; margin: 0 0 6px; }
-    .result-title { font-size: 18px; font-weight: 700; margin: 0 0 10px; }
+    
 
+    .heading { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
+    .heading-h { font-size: 20px; font-weight: 800; margin: 0 0 6px; padding-left: 10px;}
+        
+    .sub { color: var(--muted); font-size: 14px; margin: 0 0 6px; }
+    .sub-h { color: var(--muted); font-size: 14px; margin: 0 0 6px; padding-left: 10px;}
+    .result-title { font-size: 18px; font-weight: 700; margin: 0 0 10px; }
+    .result-title-h { font-size: 18px; font-weight: 700; margin: 0 0 0 20px; }
     table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); margin-bottom: 16px; }
     th, td { border-bottom: 1px solid var(--border); padding: 8px 12px; text-align: center; font-size: 14px; }
     th { background: #0d1528; color: #c7d2fe; }
 
 
     .muted { color: var(--muted); }
+    .muted-h { color: var(--muted);
+      margin: 0 0 0 20px;
+      padding-top: 10px;
+    }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 12px; }
     .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
     .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px 0; }
@@ -79,18 +88,7 @@
     .zoom-img:hover {
       transform: scale(1.8); /* 1.2배 확대 */
     }
-    /* .card table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .card th, .card td {
-        border: 1px solid #ccc;
-        padding: 6px 10px;
-        text-align: center;
-    }  */
-
-
+  
 
  /* === 헤더 버튼 스타일 === */
     .main-header {
@@ -143,7 +141,7 @@
       color: #fff;
       pointer-events: none; 
     } */
-    .result-root-container { display: flex; flex-direction: column; gap: 30px; padding: 20px; }
+    .result-root-container { display: flex; flex-direction: column; gap: 5px; padding: 20px; margin-top: 30px;}
     .area-title { font-size: 20px; font-weight: 700; border-bottom: 2px solid var(--border); padding-bottom: 6px; margin-bottom: 10px; }
     .result-container { display: flex; flex-wrap: wrap; gap: 20px; }
     .result-section { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
@@ -193,13 +191,38 @@
           <button class="tab-button active" id="tabPerf">성능테스터</button>
         </div>
 
-        <h1 class="heading">성능테스터 데모</h1>
-        <p class="sub">상단에서 모델을 선택하고 <span class="kbd">조회</span>를 클릭하세요. 선택된 모델의 요약 정보와 예시 결과가 이 영역에 표시됩니다.</p>
-        <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
+        <h1 class="heading-h">성능테스터 데모</h1>
+        <p class="sub-h">상단에서 모델을 선택하고 <span class="kbd">조회</span>를 클릭하세요. 선택된 모델의 요약 정보와 예시 결과가 이 영역에 표시됩니다.</p>
+        
+        <section>
+          <!-- 주요로직 제목 오른쪽 배치 -->
+          <h1 class="result-title" style="display:flex; justify-content:flex-end; cursor:pointer;" id="toggleLogic">
+            주요로직 ▼
+          </h1>
+
+          <!-- 숨겨진 주요로직 영역 -->
+          <div id="logicContent" style="display:none;">
+            <pre class="mono" style="white-space:pre-wrap; word-break:break-all; background:#0b1323; border:1px solid var(--border); padding:12px; border-radius:12px;">
+            fetch(`/api/search?model=${'{선택된_모델'}`})
+              .then(r => r.json())
+              .then(data => renderResult(data))
+              .catch(err => showError(err));
+            </pre>
+          </div>
+        </section>
+        <!-- <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
           <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
             <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p>
           </div>
+        </div> -->
+
+        <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
+          <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
+            <!-- <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p> -->
+            <p class="muted"> </p>
+          </div>
         </div>
+
         <p class="hint">백엔드 연동 시 <span class="kbd">/api/search?model=모델명</span> 과 같이 연결하면 됩니다. 예시 코드는 하단 참고.</p>
       </section>
     </div>
@@ -217,7 +240,7 @@
         <span class="spinner"></span><div>머신러닝 호출…</div></div>`;
     }
 
-     const MODEL_INFO = {
+    const MODEL_INFO = {
       'RandomForestRegressor': {
         desc: '여러 결정 트리의 앙상블로 일반화 성능이 우수합니다. 범용 회귀에 강함.',
         params: [ ['n_estimators', '100'], ['max_depth', '자동'], ['random_state', '42'] ],
@@ -248,9 +271,10 @@
      
       const info = MODEL_INFO[modelName]
 
-      let html = `<div class="card"><div class="result-title">선택 모델: ${modelName}
-                  <p class="muted">${info.desc}</p>
-      </div>`;
+      
+      let html = `<div class="card"><div class="result-title-h">선택 모델: ${modelName}</div>
+                  <p class="muted-h">${info.desc}</p>
+      `;
 
       for (let size in data){
         const jeonse = data[size].jeonse;
@@ -298,9 +322,11 @@
               <div class="chart-section"><img src="data:image/png;base64,${wolse.image_url}" alt="월세 그래프" class="zoom-img"></div>
             </div>
 
-          </div></div>`;
+          </div>
+          </div>`;
       }
       html += "</div>";
+      resultArea.setAttribute('aria-busy', 'false');
       resultArea.innerHTML = html;
     }
 
@@ -340,6 +366,20 @@
     document.getElementById("tabPerf").addEventListener("click", function () {
       if (!this.classList.contains("active")) {
         window.location.href = "{% url 'bbs:price_for_per_area_test' %}"; // 성능테스터 페이지
+      }
+    });
+
+
+
+      // 주요로직 토글 기능
+    document.getElementById("toggleLogic").addEventListener("click", function(){
+      const logicContent = document.getElementById("logicContent");
+      if(logicContent.style.display === "none"){
+        logicContent.style.display = "block";
+        this.innerHTML = "주요로직 ▲"; // 열린 상태
+      } else {
+        logicContent.style.display = "none";
+        this.innerHTML = "주요로직 ▼"; // 닫힌 상태
       }
     });
   </script>
