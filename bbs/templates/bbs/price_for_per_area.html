@@ -49,6 +49,41 @@
     button:hover { filter: brightness(1.05); }
     button:active { transform: translateY(1px); }
 
+
+       .tab-menu {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    /* .tab-button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #f5f5f5;
+      color: #333;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+    } */
+    .tab-button {
+      padding: 8px 16px;
+      border-radius: 8px 8px 0 0;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .tab-button.active { background: var(--accent); color: #fff; }
+    /* .tab-button.active {
+      background: linear-gradient(135deg, #4a90e2, #357ab7);
+      border-color: transparent;
+      color: #fff;
+      pointer-events: none; 
+    } */
+
     main { padding: 16px; }
     .grid { max-width: 1080px; margin: 16px auto; display: grid; gap: 16px; }
     .card {
@@ -143,6 +178,11 @@
   <main>
     <div class="grid">
       <section class="card">
+          <!-- 상단 탭 버튼 -->
+        <div class="tab-menu">
+          <button class="tab-button active" id="tabVolume">10월거래량</button>
+          <button class="tab-button " id="tabPerf">성능테스터</button>
+        </div>
         <h1 class="heading">모델 조회 데모</h1>
         <p class="sub">상단에서 모델을 선택하고 <span class="kbd">조회</span>를 클릭하세요. 선택된 모델의 요약 정보와 예시 결과가 이 영역에 표시됩니다.</p>
         <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
@@ -201,22 +241,7 @@
       catch { return n; }
     }
 
-
-    // function renderTable(rows) {
-    //   const trs = rows.map(row =>
-    //     `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
-    //   ).join('');
-    //   return `
-    //     <table role="table" aria-label="모델 파라미터">
-    //       <thead>
-    //         <tr><th>면적</th><th>항목</th><th>값</th></tr>
-    //       </thead>
-    //       <tbody>${trs}</tbody>
-    //     </table>`;
-    // }
-
-
-     function renderTable(rows) {
+    function renderTable(rows) {
               const trs = rows.map(item => `
         <tr>
             <td rowspan="3">${item.면적}</td>
@@ -259,18 +284,7 @@
         // -----------------------
         const perf = jsonData.performance; 
 
-        // const jeonseRows = perf["전세"].flatMap(item => [
-        //     [item.면적, "RMSE", item.RMSE],
-        //     [item.면적, "R2", item.R2],
-        //     [item.면적, "MAE", item.MAE],
-        // ]);
-
-        // const wolseRows = perf["월세"].flatMap(item => [
-        //     [item.면적, "RMSE", item.RMSE],
-        //     [item.면적, "R2", item.R2],
-        //     [item.면적, "MAE", item.MAE],
-        // ]);
-
+     
         const jeonseRows = perf["전세"].map(item => ({
             면적: item.면적,
             RMSE: item.RMSE,
@@ -290,7 +304,6 @@
         const jeonseTable = renderTable(jeonseRows);
         const wolseTable = renderTable(wolseRows);
         const imgUrl = img;
-        console.log("  image 나와라 "+imgUrl)
         // 화면 렌더링
         resultArea.setAttribute('aria-busy', 'false');
         resultArea.innerHTML = `
@@ -414,7 +427,6 @@
       showLoading();
 
       const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-console.log(csrftoken)
       try{
         await fetchModel(csrftoken)
       }catch(e){
@@ -429,6 +441,49 @@ console.log(csrftoken)
         searchBtn.click();
       }
     });
+
+
+      // ----------------------------
+    // 탭 이벤트 처리
+    // ----------------------------
+    // function activateTab(tab){
+    //   if(tab.classList.contains('active')) return; // 이미 활성화된 탭이면 차단
+    //   tabVolume.classList.remove('active');
+    //   tabPerf.classList.remove('active');
+    //   tab.classList.add('active');
+
+    //   if(tab.id === 'tabVolume'){
+    //     renderVolume();
+    //   } else {
+    //     renderResult({});
+    //   }
+    // }
+
+    // tabVolume.addEventListener('click', () => activateTab(tabVolume));
+    // tabPerf.addEventListener('click', () => activateTab(tabPerf));
+
+    // ----------------------------
+    // 조회 버튼 이벤트
+    // ----------------------------
+    searchBtn.addEventListener('click', () => {
+      showLoading();
+      setTimeout(()=>renderResult({}), 1000); // demo
+    });
+
+
+      // 탭 버튼 이벤트 처리
+    document.getElementById("tabVolume").addEventListener("click", function () {
+      if (!this.classList.contains("active")) {
+        window.location.href = "{% url 'bbs:price_for_per_area_page' %}";  // 10월거래량 페이지
+      }
+    });
+
+    document.getElementById("tabPerf").addEventListener("click", function () {
+      if (!this.classList.contains("active")) {
+        window.location.href = "{% url 'bbs:price_for_per_area_test' %}"; // 성능테스터 페이지
+      }
+    });
+
   </script>
 </body>
 </html>

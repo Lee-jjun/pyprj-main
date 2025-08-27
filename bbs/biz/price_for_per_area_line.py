@@ -292,7 +292,7 @@ def LRegression():
 # Decision Tree Regression (결정 트리 회귀): 
 # 데이터를 특정 조건에 따라 나누는 '결정 트리' 구조를 사용하여 예측합니다.
 from sklearn.tree import DecisionTreeRegressor
-
+                         
 def DTreeRegressor():
 
     # 운영체제에 맞는 한글 폰트 설정
@@ -723,9 +723,11 @@ def allRegress():
         return all_results
 
 
-
-
-def regression_prediction():
+# 1. RandomForestRegressor
+# 2. LinearRegression
+# 3. DecisionTreeRegressor
+# 4. GradientBoostingRegressor
+def performance_test(testType):
     """
     Linear Regression 모델을 사용하여 아파트 전월세 수요를 예측하고, 
     결과를 특정 형식의 딕셔너리로 반환하는 함수입니다.
@@ -799,7 +801,20 @@ def regression_prediction():
             print(f"y_train ={y_train}")
             print(f"y_test ={y_test}")
             
-            model = LinearRegression()
+
+            # 1. RandomForestRegressor
+            # 2. LinearRegression
+            # 3. DecisionTreeRegressor
+            # 4. GradientBoostingRegressor
+            if testType == "5" :
+                model = RandomForestRegressor(random_state=42)
+            elif testType == "6" :
+                model = LinearRegression()
+            elif testType == "7" :
+                model = DecisionTreeRegressor(random_state=42)
+            elif testType == "8" :
+                model = GradientBoostingRegressor(random_state=42)   
+                 
             model.fit(X_train, y_train)
             
             predicted_demand_future = model.predict([[predict_date_index]])[0]
@@ -968,8 +983,10 @@ def engine(actionType):
     elif actionType == "4" :
         return GBRegressor()
     else  :
-        #GradientBoostingRegressor
-        # return allRegress()
-        return regression_prediction()
+        # 1. RandomForestRegressor
+        # 2. LinearRegression
+        # 3. DecisionTreeRegressor
+        # 4. GradientBoostingRegressor
+        return performance_test(actionType)
     
 

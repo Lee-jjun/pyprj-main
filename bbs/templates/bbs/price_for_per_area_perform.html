@@ -18,7 +18,7 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Helvetica, Arial;
       line-height: 1.5;
       color: var(--text);
       background: radial-gradient(1200px 800px at 80% -20%, rgba(34,211,238,.15), transparent),
@@ -59,87 +59,84 @@
     .heading { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
     .sub { color: var(--muted); font-size: 14px; margin: 0 0 6px; }
     .result-title { font-size: 18px; font-weight: 700; margin: 0 0 10px; }
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; color: #cbd5e1; background: #0b1323; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); }
 
-    table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    th, td { border-bottom: 1px solid var(--border); padding: 10px 12px; text-align: center; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); margin-bottom: 16px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 8px 12px; text-align: center; font-size: 14px; }
     th { background: #0d1528; color: #c7d2fe; }
-    tr:last-child td { border-bottom: none; }
 
-    .row { display: grid; grid-template-columns: 2fr 3fr; gap: 16px; }
-    @media (max-width: 820px){ .toolbar { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
-
-    .spinner { width: 20px; height: 20px; border: 3px solid #2a3657; border-top-color: #7aa2ff; border-radius: 50%; animation: spin 1s linear infinite; display:inline-block; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     .muted { color: var(--muted); }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 12px; }
     .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
     .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px 0; }
-
-    .result-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
+  
+    /* .card table {
+        width: 100%;
+        border-collapse: collapse;
     }
 
-    .result-section {
-        flex: 1;
-        min-width: 300px;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-   .stat-group {
-      background-color: rgba(255, 255, 255, 0.08);
-      padding: 5px 12px;       /* 내부 위아래 여백 5px, 좌우 12px */
-      border-radius: 8px;
-      margin-top: 80px;        /* 외부 위 여백 20px */
-      margin-bottom: -20px;      /* 외부 아래 여백 5px */
-    }
+    .card th, .card td {
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+        text-align: center;
+    }  */
 
-    .stat-group h3 {
-      margin: 2px 0;           /* h3 내부 위아래 여백 최소화 */
-      text-align: center;
-      font-size: 16px;
-    }
 
-    .stat-group .stat-item {
-      margin: 2px 0;           /* 항목간 간격 줄임 */
-      font-size: 13px;
-    }
 
-    table {
-      margin: 5px 0;           /* 위아래 여백 5px */
-      border-collapse: collapse;
-    }
 
-    table th, table td {
-      padding: 4px 8px;        /* 테이블 내부 셀 여백도 조금 줄임 */
-      text-align: center;
-      font-size: 13px;
-    }
 
+
+    tr:last-child td { border-bottom: none; }
+    .tab-menu {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      padding: 8px 16px;
+      border-radius: 8px 8px 0 0;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .tab-button.active { background: var(--accent); color: #fff; }
+    /* .tab-button.active {
+      background: linear-gradient(135deg, #4a90e2, #357ab7);
+      border-color: transparent;
+      color: #fff;
+      pointer-events: none; 
+    } */
+    .result-root-container { display: flex; flex-direction: column; gap: 30px; padding: 20px; }
+    .area-title { font-size: 20px; font-weight: 700; border-bottom: 2px solid var(--border); padding-bottom: 6px; margin-bottom: 10px; }
+    .result-container { display: flex; flex-wrap: wrap; gap: 20px; }
+    .result-section { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
     .chart-section img { max-width: 100%; border:1px solid #ccc; border-radius:6px; }
+
+    .spinner { width: 20px; height: 20px; border: 3px solid #2a3657; border-top-color: #7aa2ff; border-radius: 50%; animation: spin 1s linear infinite; display:inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px 0; }
   </style>
 </head>
 <body>
   <header>
     <div class="container toolbar">
-      <div class="controls" role="group" aria-label="모델 선택 및 조회">
+      <div class="controls" role="group">
         <div>
           <label for="modelSelect">선택항목</label><br />
-          <select id="modelSelect" aria-label="모델 선택">
-            <option value="3">RandomForestRegressor</option>
-            <option value="1">LinearRegression</option>
-            <option value="2">Decision Tree Regression</option>
-            <option value="4">Gradient Boosting Regression</option>
-            <option value="5">======= default ======</option>
+          <select id="modelSelect">
+            <option value="5">RandomForestRegressor</option>
+            <option value="6">LinearRegression</option>
+            <option value="7">Decision Tree Regression</option>
+            <option value="8">Gradient Boosting Regression</option>
           </select>
         </div>
         <div>
           <label class="invisible" style="opacity:0">조회</label><br/>
-          <button id="searchBtn" type="button" aria-label="조회버튼">조회</button>
+          <button id="searchBtn" type="button">조회</button>
         </div>
       </div>
     </div>
@@ -148,18 +145,24 @@
   <main>
     <div class="grid">
       <section class="card">
-        <h1 class="heading">모델 조회 데모</h1>
+        <!-- 상단 탭 버튼 -->
+        <div class="tab-menu">
+          <button class="tab-button " id="tabVolume">10월거래량</button>
+          <button class="tab-button active" id="tabPerf">성능테스터</button>
+        </div>
+
+        <h1 class="heading">성능테스터 데모</h1>
         <p class="sub">상단에서 모델을 선택하고 <span class="kbd">조회</span>를 클릭하세요. 선택된 모델의 요약 정보와 예시 결과가 이 영역에 표시됩니다.</p>
-        <div id="resultArea" aria-live="polite" aria-busy="false">
+        <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
           <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
             <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p>
           </div>
         </div>
-        <p class="hint">백엔드 연동 시 <span class="kbd">/pfpa/api/</span> 과 같이 연결하면 됩니다.</p>
+        <p class="hint">백엔드 연동 시 <span class="kbd">/api/search?model=모델명</span> 과 같이 연결하면 됩니다. 예시 코드는 하단 참고.</p>
       </section>
     </div>
     {% csrf_token %}
-    <div class="footer">© 2025 모델 조회 데모 · 단일 HTML 파일</div>
+    <div class="footer">© 2025 모델 조회 데모</div>
   </main>
 
   <script>
@@ -168,80 +171,75 @@
     const modelSel   = document.getElementById('modelSelect');
 
     function showLoading(){
-      resultArea.setAttribute('aria-busy','true');
-      resultArea.innerHTML = `
-        <div class="card" style="grid-column: 1/-1; text-align:center;">
-          <span class="spinner" aria-hidden="true"></span>
-          <div style="margin-top:8px;">머신러닝 호출…</div>
-        </div>
-      `;
+      resultArea.innerHTML = `<div class="card" style="text-align:center;">
+        <span class="spinner"></span><div>머신러닝 호출…</div></div>`;
     }
 
-    function showError(err){
-      resultArea.setAttribute('aria-busy', 'false');
-      resultArea.innerHTML = `
-        <div class="card" style="border-color:#7f1d1d; background: #170e10;">
-          <div class="result-title">오류</div>
-          <p class="muted">${(err && err.message) ? err.message : '알 수 없는 오류가 발생했습니다.'}</p>
-        </div>`;
-    }
+    const MODEL_INFO = {
+      'RandomForestRegressor': { desc:'랜덤포레스트', metrics:{RMSE:12.8,R2:0.87} },
+      'LinearRegression': { desc:'선형회귀', metrics:{RMSE:18.3,R2:0.72} }
+    };
 
-    function renderResult(data) {
+    function renderResult(data){
+      const modelName = modelSel.options[modelSel.selectedIndex].text;
       const formatNumber = n => new Intl.NumberFormat('ko-KR').format(n);
-      let html = '';
-      for (let size in data) {
+
+      let html = `<div class="card"><div class="result-title">선택 모델: ${modelName}</div>`;
+
+      for (let size in data){
         const jeonse = data[size].jeonse;
         const wolse  = data[size].wolse;
 
-        html += `
-           <div class="result-container">
+        html += `<div class="result-root-container">
+          <div class="area-title">면적: ${size}</div>
+          <div class="result-container">
+
             <div class="result-section">
-              <div class="stat-group">
-                <h3>면적: ${size} (전세)</h3>
-                <div>
-                  <div class="stat-item">훈련성능: ${jeonse["훈련성능"]}</div>
-                  <div class="stat-item">테스트 성능: ${jeonse["테스트 성능"]}</div>
-                  <div class="stat-item">과적합 여부: ${jeonse["과적합 여부"]}</div>
-                </div>
-              </div>
+              <h3>전세</h3>
+              <table>
+                <thead><tr><th>구분</th><th>값</th></tr></thead>
+                <tbody>
+                  <tr><td>훈련성능</td><td>${jeonse["훈련성능"]}</td></tr>
+                  <tr><td>테스트 성능</td><td>${jeonse["테스트 성능"]}</td></tr>
+                  <tr><td>과적합 여부</td><td>${jeonse["과적합 여부"]}</td></tr>
+                </tbody>
+              </table>
               <table>
                 <thead><tr><th>년-월</th><th>실제값</th><th>예측값</th></tr></thead>
                 <tbody>
-                  ${jeonse["실제값 리스트"].map((v,i)=>`<tr><td>${wolse["년-월"][i]}</td><td style="text-align:right;">${formatNumber(v)}</td><td style="text-align:right;">${formatNumber(jeonse["예측값 리스트"][i])}</td></tr>`).join('')}
+                  ${jeonse["실제값 리스트"].map((v,i)=>`<tr><td>${jeonse["년-월"][i]}</td><td>${formatNumber(v)}</td><td>${formatNumber(jeonse["예측값 리스트"][i])}</td></tr>`).join('')}
                 </tbody>
               </table>
-              <div class="chart-section">
-                <img src="${jeonse.image_url}" alt="전세 그래프">
-              </div>
+              <div class="chart-section"><img src="${jeonse.image_url}" alt="전세 그래프"></div>
             </div>
 
             <div class="result-section">
-              <div class="stat-group">
-                <h3>면적: ${size} (월세)</h3>
-                <div>
-                  <div class="stat-item">훈련성능: ${wolse["훈련성능"]}</div>
-                  <div class="stat-item">테스트성능: ${wolse["테스트 성능"]}</div>
-                  <div class="stat-item">과적합 여부: ${wolse["과적합 여부"]}</div>
-                </div>
-              </div>
+              <h3>월세</h3>
+              <table>
+                <thead><tr><th>구분</th><th>값</th></tr></thead>
+                <tbody>
+                  <tr><td>훈련성능</td><td>${wolse["훈련성능"]}</td></tr>
+                  <tr><td>테스트 성능</td><td>${wolse["테스트 성능"]}</td></tr>
+                  <tr><td>과적합 여부</td><td>${wolse["과적합 여부"]}</td></tr>
+                </tbody>
+              </table>
               <table>
                 <thead><tr><th>년-월</th><th>실제값</th><th>예측값</th></tr></thead>
                 <tbody>
-                  ${wolse["실제값 리스트"].map((v,i)=>`<tr><td>${wolse["년-월"][i]}</td><td style="text-align:right;">${formatNumber(v)}</td><td style="text-align:right;">${formatNumber(wolse["예측값 리스트"][i])}</td></tr>`).join('')}
+                  ${wolse["실제값 리스트"].map((v,i)=>`<tr><td>${wolse["년-월"][i]}</td><td>${formatNumber(v)}</td><td>${formatNumber(wolse["예측값 리스트"][i])}</td></tr>`).join('')}
                 </tbody>
               </table>
-              <div class="chart-section">
-                <img src="${wolse.image_url}" alt="월세 그래프">
-              </div>
+              <div class="chart-section"><img src="${wolse.image_url}" alt="월세 그래프"></div>
             </div>
-          </div>
-        `;
+
+          </div></div>`;
       }
-      resultArea.setAttribute('aria-busy','false');
+      html += "</div>";
       resultArea.innerHTML = html;
     }
 
-    async function fetchModel(csrftoken) {
+
+     async function fetchModel(csrftoken) {
       try {
         const response = await fetch('/pfpa/api/', {
           method: "POST",
@@ -259,14 +257,53 @@
       }
     }
 
-    searchBtn.addEventListener('click', async () => {
-      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    searchBtn.addEventListener('click', () => {
       showLoading();
-      await fetchModel(csrftoken);
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      fetchModel(csrftoken);
     });
 
-    modelSel.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') searchBtn.click();
+
+
+      // ----------------------------
+    // 탭 이벤트 처리
+    // ----------------------------
+    // function activateTab(tab){
+    //   if(tab.classList.contains('active')) return; // 이미 활성화된 탭이면 차단
+    //   tabVolume.classList.remove('active');
+    //   tabPerf.classList.remove('active');
+    //   tab.classList.add('active');
+
+    //   if(tab.id === 'tabVolume'){
+    //     renderVolume();
+    //   } else {
+    //     renderResult({});
+    //   }
+    // }
+
+    // tabVolume.addEventListener('click', () => activateTab(tabVolume));
+    // tabPerf.addEventListener('click', () => activateTab(tabPerf));
+
+    // ----------------------------
+    // 조회 버튼 이벤트
+    // ----------------------------
+    // searchBtn.addEventListener('click', () => {
+    //   showLoading();
+    //   setTimeout(()=>renderResult({}), 1000); // demo
+    // });
+
+    
+      // 탭 버튼 이벤트 처리
+    document.getElementById("tabVolume").addEventListener("click", function () {
+      if (!this.classList.contains("active")) {
+        window.location.href = "{% url 'bbs:price_for_per_area_page' %}";  // 10월거래량 페이지
+      }
+    });
+
+    document.getElementById("tabPerf").addEventListener("click", function () {
+      if (!this.classList.contains("active")) {
+        window.location.href = "{% url 'bbs:price_for_per_area_test' %}"; // 성능테스터 페이지
+      }
     });
   </script>
 </body>

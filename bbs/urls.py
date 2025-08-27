@@ -18,7 +18,7 @@ urlpatterns = [
     #path('data-source/', views.DataSourcePage.as_view(), name='data_source'),
     path('pfpa/', pfpa_views.PriceForPerAreaPage.as_view(), name='price_for_per_area_page'),
     path('pfpa/api/', pfpa_views.PriceForPerArea.as_view(), name='price_for_per_area'),
-
+    path('pfpa-test/api/', pfpa_views.PriceForPerAreaTestPage.as_view(), name='price_for_per_area_test'),
     
     # data_source 관련 URL 패턴은 제거하고 새로운 URL 패턴으로 대체합니다.
     # path('data-source/', views.data_source_view, name='data_source'),
