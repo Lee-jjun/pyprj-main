@@ -109,7 +109,7 @@
           <button id="searchBtn" type="button" aria-label="조회버튼">조회</button>
         </div>
       </div>
-      <div class="muted mono">상단 고정 툴바 · 같은 페이지에 결과 표시</div>
+      <!-- <div class="muted mono">상단 고정 툴바 · 같은 페이지에 결과 표시</div> -->
     </div>
   </header>
 
@@ -357,7 +357,7 @@
         try {
             const modelSel   = document.getElementById('modelSelect');
             // 서버 URL을 호출
-            const response = await fetch('/bbs/pfpa/api/', {
+            const response = await fetch('/pfpa/api/', {
                 method: "POST",                      // POST 요청
                 headers: {
                     "Content-Type": "application/json",  // JSON 형식 명시
