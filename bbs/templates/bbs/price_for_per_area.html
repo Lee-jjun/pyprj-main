@@ -112,6 +112,17 @@
     .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
     .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px 0; }
   
+    /* 마우스가 이미지 위로 올라가면 이미지 사이즈를 키움*/
+    .zoom-img {
+      /* width: 200px; */
+      height: auto;
+      transition: transform 0.3s ease; /* 부드럽게 확대 */
+    }
+
+    .zoom-img:hover {
+      transform: scale(1.2); /* 1.2배 확대 */
+    }
+
     .card table {
         width: 100%;
         border-collapse: collapse;
@@ -332,7 +343,7 @@
 
               <!-- 이미지 출력: 표 아래 -->
               ${imgUrl ? `<div style="margin-top: 20px; text-align:center;">
-                <img src="${imgUrl}" alt="모델 결과 이미지" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">
+                <img src="data:image/png;base64,${imgUrl}" alt="모델 결과 이미지" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;" class="zoom-img">
               </div>` : ''}
 
             </div>

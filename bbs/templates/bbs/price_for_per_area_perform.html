@@ -69,7 +69,16 @@
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 12px; }
     .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
     .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px 0; }
-  
+    /* 마우스가 이미지 위로 올라가면 이미지 사이즈를 키움*/
+    .zoom-img {
+      /* width: 200px; */
+      height: auto;
+      transition: transform 0.5s ease; /* 부드럽게 확대 */
+    }
+
+    .zoom-img:hover {
+      transform: scale(1.8); /* 1.2배 확대 */
+    }
     /* .card table {
         width: 100%;
         border-collapse: collapse;
@@ -267,7 +276,7 @@
                   ${jeonse["실제값 리스트"].map((v,i)=>`<tr><td>${jeonse["년-월"][i]}</td><td>${formatNumber(v)}</td><td>${formatNumber(jeonse["예측값 리스트"][i])}</td></tr>`).join('')}
                 </tbody>
               </table>
-              <div class="chart-section"><img src="${jeonse.image_url}" alt="전세 그래프"></div>
+              <div class="chart-section"><img src="data:image/png;base64,${jeonse.image_url}" alt="전세 그래프" class="zoom-img"></div>
             </div>
 
             <div class="result-section">
@@ -286,7 +295,7 @@
                   ${wolse["실제값 리스트"].map((v,i)=>`<tr><td>${wolse["년-월"][i]}</td><td>${formatNumber(v)}</td><td>${formatNumber(wolse["예측값 리스트"][i])}</td></tr>`).join('')}
                 </tbody>
               </table>
-              <div class="chart-section"><img src="${wolse.image_url}" alt="월세 그래프"></div>
+              <div class="chart-section"><img src="data:image/png;base64,${wolse.image_url}" alt="월세 그래프" class="zoom-img"></div>
             </div>
 
           </div></div>`;
@@ -319,35 +328,6 @@
       const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
       fetchModel(csrftoken);
     });
-
-
-
-      // ----------------------------
-    // 탭 이벤트 처리
-    // ----------------------------
-    // function activateTab(tab){
-    //   if(tab.classList.contains('active')) return; // 이미 활성화된 탭이면 차단
-    //   tabVolume.classList.remove('active');
-    //   tabPerf.classList.remove('active');
-    //   tab.classList.add('active');
-
-    //   if(tab.id === 'tabVolume'){
-    //     renderVolume();
-    //   } else {
-    //     renderResult({});
-    //   }
-    // }
-
-    // tabVolume.addEventListener('click', () => activateTab(tabVolume));
-    // tabPerf.addEventListener('click', () => activateTab(tabPerf));
-
-    // ----------------------------
-    // 조회 버튼 이벤트
-    // ----------------------------
-    // searchBtn.addEventListener('click', () => {
-    //   showLoading();
-    //   setTimeout(()=>renderResult({}), 1000); // demo
-    // });
 
     
       // 탭 버튼 이벤트 처리
