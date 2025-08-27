@@ -87,6 +87,33 @@
         padding: 6px 10px;
         text-align: center;
     } 
+ /* === 헤더 버튼 스타일 === */
+        .main-header {
+            text-align: center;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .header-button {
+            display: inline-block;
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .header-button:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
 
   </style>
 </head>
@@ -109,7 +136,12 @@
           <button id="searchBtn" type="button" aria-label="조회버튼">조회</button>
         </div>
       </div>
-      <!-- <div class="muted mono">상단 고정 툴바 · 같은 페이지에 결과 표시</div> -->
+      <div class="muted mono"> <header class="main-header">
+                <a href="/" class="header-button">
+                    Ai-X APT 부동산 전/월세 예측 서비스
+                </a>
+        </header></div>
+       
     </div>
   </header>
 
