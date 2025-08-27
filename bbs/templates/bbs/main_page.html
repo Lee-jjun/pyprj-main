@@ -26,30 +26,38 @@
         justify-content: center;
         align-items: center;
         height: 80vh;
-        gap: 60px;  /* 버튼 간격 */
+        gap: 80px;  /* 버튼 간격 */
         z-index: 5;
     }
 
     /* 버튼 스타일 */
     .main-button {
         display: flex;
+        flex-direction: column;  /* 세로 정렬 */
         justify-content: center;
         align-items: center;
-        width: 280px;
-        height: 100px;
-        background-color: rgba(255, 255, 255, 0.8);
-        color: #000;
-        font-size: 1.6em;
+        width: 400px;
+        height: 200px;
+        color: #fff;
+        font-size: 2.2em;
         font-weight: bold;
         text-decoration: none;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px); /* 블러 효과 */
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
         transition: transform 0.3s ease, background-color 0.3s ease;
     }
 
     .main-button:hover {
-        transform: translateY(-8px);
-        background-color: rgba(255, 255, 255, 1);
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* 버튼 텍스트 줄바꿈 */
+    .main-button span {
+        display: block; /* 줄바꿈 강제 */
     }
 </style>
 
@@ -57,10 +65,12 @@
 
 <div class="button-container">
     <a href="{% url 'bbs:price_range_forecast' %}" class="main-button">
-        전/월세 가격 예측하기
+        <span>전/월세 가격</span>
+        <span>예측하기</span>
     </a>
     <a href="{% url 'bbs:price_for_per_area_page' %}" class="main-button">
-        전용면적 예측하기
+        <span>전용면적</span>
+        <span>예측하기</span>
     </a>
 </div>
 {% endblock %}
