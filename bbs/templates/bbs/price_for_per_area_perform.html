@@ -62,7 +62,7 @@
     .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; color: #cbd5e1; background: #0b1323; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); }
 
     table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    th, td { border-bottom: 1px solid var(--border); padding: 10px 12px; text-align: left; font-size: 14px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 10px 12px; text-align: center; font-size: 14px; }
     th { background: #0d1528; color: #c7d2fe; }
     tr:last-child td { border-bottom: none; }
 
@@ -76,23 +76,51 @@
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 12px; }
     .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
     .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px 0; }
-  
-    .card table {
-        width: 100%;
-        border-collapse: collapse;
+
+    .result-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
-    .card th, .card td {
-        border: 1px solid #ccc;
-        padding: 6px 10px;
-        text-align: center;
-    } 
-
-    .result-box {
+    .result-section {
         flex: 1;
         min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+   .stat-group {
+      background-color: rgba(255, 255, 255, 0.08);
+      padding: 5px 12px;       /* 내부 위아래 여백 5px, 좌우 12px */
+      border-radius: 8px;
+      margin-top: 80px;        /* 외부 위 여백 20px */
+      margin-bottom: -20px;      /* 외부 아래 여백 5px */
     }
 
+    .stat-group h3 {
+      margin: 2px 0;           /* h3 내부 위아래 여백 최소화 */
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .stat-group .stat-item {
+      margin: 2px 0;           /* 항목간 간격 줄임 */
+      font-size: 13px;
+    }
+
+    table {
+      margin: 5px 0;           /* 위아래 여백 5px */
+      border-collapse: collapse;
+    }
+
+    table th, table td {
+      padding: 4px 8px;        /* 테이블 내부 셀 여백도 조금 줄임 */
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .chart-section img { max-width: 100%; border:1px solid #ccc; border-radius:6px; }
   </style>
 </head>
 <body>
@@ -106,15 +134,15 @@
             <option value="1">LinearRegression</option>
             <option value="2">Decision Tree Regression</option>
             <option value="4">Gradient Boosting Regression</option>
-             <option value="5">===== default =====</option>
-            </select>
+            <option value="5">======= default ======</option>
+          </select>
         </div>
         <div>
           <label class="invisible" style="opacity:0">조회</label><br/>
           <button id="searchBtn" type="button" aria-label="조회버튼">조회</button>
         </div>
       </div>
-      </div>
+    </div>
   </header>
 
   <main>
@@ -122,30 +150,12 @@
       <section class="card">
         <h1 class="heading">모델 조회 데모</h1>
         <p class="sub">상단에서 모델을 선택하고 <span class="kbd">조회</span>를 클릭하세요. 선택된 모델의 요약 정보와 예시 결과가 이 영역에 표시됩니다.</p>
-        <div id="resultArea" style="display: flex; gap: 20px; flex-wrap: wrap;" aria-live="polite" aria-busy="false">
+        <div id="resultArea" aria-live="polite" aria-busy="false">
           <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
             <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p>
           </div>
         </div>
-        <p class="hint">백엔드 연동 시 <span class="kbd">/api/search?model=모델명</span> 과 같이 연결하면 됩니다. 예시 코드는 하단 참고.</p>
-      </section>
-
-      <section class="card">
-        <h2 class="result-title">Python 코드 예시</h2>
-        <pre class="mono" style="white-space:pre-wrap; word-break:break-all; background:#0b1323; border:1px solid var(--border); padding:12px; border-radius:12px;">
-from sklearn.ensemble import RandomForestRegressor
-import matplotlib.pyplot as plt
-
-# 모델 생성
-model = RandomForestRegressor(n_estimators=100, random_state=42)
-
-# 가상 데이터로 학습
-# X_train, y_train은 실제 데이터셋으로 대체해야 합니다.
-# model.fit(X_train, y_train)
-
-# 예측 결과
-# predicted_values = model.predict(X_test)
-        </pre>
+        <p class="hint">백엔드 연동 시 <span class="kbd">/pfpa/api/</span> 과 같이 연결하면 됩니다.</p>
       </section>
     </div>
     {% csrf_token %}
@@ -153,121 +163,12 @@ model = RandomForestRegressor(n_estimators=100, random_state=42)
   </main>
 
   <script>
-    // 간단한 데모용 더미 데이터
-    const MODEL_INFO = {
-      'RandomForestRegressor': {
-        desc: '여러 결정 트리의 앙상블로 일반화 성능이 우수합니다. 범용 회귀에 강함.',
-        params: [ ['n_estimators', '100'], ['max_depth', '자동'], ['random_state', '42'] ],
-        metrics: { RMSE: 12.8, R2: 0.87 }
-      },
-      'LinearRegression': {
-        desc: '선형 가정 기반. 속도가 매우 빠르고 해석이 쉬움.',
-        params: [ ['fit_intercept', 'true'], ['n_jobs', '자동'], ['normalize', 'false'] ],
-        metrics: { RMSE: 18.3, R2: 0.72 }
-      },
-      'Decision Tree Regression': {
-        desc: '단일 트리 모델. 과적합 위험이 있으나 규칙 해석이 명확.',
-        params: [ ['max_depth', '8'], ['min_samples_split', '4'], ['random_state', '42'] ],
-        metrics: { RMSE: 16.9, R2: 0.77 }
-      },
-      'Gradient Boosting Regression': {
-        desc: '약한 학습기의 순차적 결합으로 높은 정확도를 달성.',
-        params: [ ['n_estimators', '200'], ['learning_rate', '0.06'], ['max_depth', '3'] ],
-        metrics: { RMSE: 11.9, R2: 0.90 }
-      }
-    };
-
     const resultArea = document.getElementById('resultArea');
     const searchBtn  = document.getElementById('searchBtn');
     const modelSel   = document.getElementById('modelSelect');
 
-    function formatNumber(n){
-      try { return new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 3 }).format(n); }
-      catch { return n; }
-    }
-
-
-    function renderTable(rows) {
-      const trs = rows.map(item => `
-        <tr>
-            <td rowspan="3">${item.면적}</td>
-            <td>RMSE</td>
-            <td>${item.RMSE}</td>
-        </tr>
-        <tr>
-            <td>R2</td>
-            <td>${item.R2}</td>
-        </tr>
-        <tr>
-            <td>MAE</td>
-            <td>${item.MAE}</td>
-        </tr>
-      `).join('');
-
-      return `
-        <table role="table" aria-label="모델 파라미터" style="width:100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>면적</th>
-                    <th>항목</th>
-                    <th>값</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${trs}
-            </tbody>
-        </table>`;
-    }
-
-    function renderResult(jsonData, img) {
-        const modelSel = document.getElementById('modelSelect');
-        const modelName = modelSel.options[modelSel.selectedIndex].text;
-        const info = MODEL_INFO[modelName];
-
-        const perf = jsonData.performance;
-        const jeonseRows = perf["전세"].map(item => ({
-            면적: item.면적,
-            RMSE: item.RMSE,
-            R2: item.R2,
-            MAE: item.MAE
-        }));
-        const wolseRows = perf["월세"].map(item => ({
-            면적: item.면적,
-            RMSE: item.RMSE,
-            R2: item.R2,
-            MAE: item.MAE
-        }));
-
-        const jeonseTable = renderTable(jeonseRows);
-        const wolseTable = renderTable(wolseRows);
-        const jeonseImgUrl = img ? img.jeonse : null;
-        const wolseImgUrl = img ? img.wolse : null;
-
-        resultArea.setAttribute('aria-busy', 'false');
-        resultArea.innerHTML = `
-            <div class="card" style="box-shadow:none; padding:0; border:none; background:transparent;">
-                <div class="result-title">선택 모델: ${modelName}</div>
-                <p class="muted">${info.desc}</p>
-            </div>
-            
-            <div class="result-box">
-                <h3 class="sub">평가지표 (전세)</h3>
-                ${jeonseTable}
-                <h3 class="sub" style="margin-top: 20px;">차트 정보 (전세)</h3>
-                ${jeonseImgUrl ? `<img src="${jeonseImgUrl}" alt="전세 모델 결과 차트" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">` : `<p class="muted">차트 이미지가 없습니다.</p>`}
-            </div>
-
-            <div class="result-box">
-                <h3 class="sub">평가지표 (월세)</h3>
-                ${wolseTable}
-                <h3 class="sub" style="margin-top: 20px;">차트 정보 (월세)</h3>
-                ${wolseImgUrl ? `<img src="${wolseImgUrl}" alt="월세 모델 결과 차트" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">` : `<p class="muted">차트 이미지가 없습니다.</p>`}
-            </div>
-        `;
-    }
-
     function showLoading(){
-      resultArea.setAttribute('aria-busy', 'true');
+      resultArea.setAttribute('aria-busy','true');
       resultArea.innerHTML = `
         <div class="card" style="grid-column: 1/-1; text-align:center;">
           <span class="spinner" aria-hidden="true"></span>
@@ -285,94 +186,86 @@ model = RandomForestRegressor(n_estimators=100, random_state=42)
         </div>`;
     }
 
-    function extractData(data) {
-      let result = {
-        predicted: {
-          전세: [],
-          월세: []
-        },
-        performance: {
-          전세: [],
-          월세: []
-        }
-      };
+    function renderResult(data) {
+      let html = '';
+      for (let size in data) {
+        const jeonse = data[size].jeonse;
+        const wolse  = data[size].wolse;
 
-      // ----------------------
-      // predicted 변환 (배열 안에 배열)
-      // ----------------------
-      for (let type in data.predicted) { // 전세, 월세
-        for (let size in data.predicted[type]) {
-          result.predicted[type].push([size, data.predicted[type][size]]);
-        }
+        html += `
+           <div class="result-container">
+            <div class="result-section">
+              <div class="stat-group">
+                <h3>면적: ${size} (전세)</h3>
+                <div>
+                  <div class="stat-item">훈련성능: ${jeonse["훈련성능"]}</div>
+                  <div class="stat-item">테스트 성능: ${jeonse["테스트 성능"]}</div>
+                  <div class="stat-item">과적합 여부: ${jeonse["과적합 여부"]}</div>
+                </div>
+              </div>
+              <table>
+                <thead><tr><th>실제값</th><th>예측값</th></tr></thead>
+                <tbody>
+                  ${jeonse["실제값 리스트"].map((v,i)=>`<tr><td>${v}</td><td>${jeonse["예측값 리스트"][i]}</td></tr>`).join('')}
+                </tbody>
+              </table>
+              <div class="chart-section">
+                <img src="${jeonse.image_url}" alt="전세 그래프">
+              </div>
+            </div>
+
+            <div class="result-section">
+              <div class="stat-group">
+                <h3>면적: ${size} (월세)</h3>
+                <div>
+                  <div class="stat-item">훈련성능: ${wolse["훈련성능"]}</div>
+                  <div class="stat-item">테스트성능: ${wolse["테스트 성능"]}</div>
+                  <div class="stat-item">과적합 여부: ${wolse["과적합 여부"]}</div>
+                </div>
+              </div>
+              <table>
+                <thead><tr><th>실제값</th><th>예측값</th></tr></thead>
+                <tbody>
+                  ${wolse["실제값 리스트"].map((v,i)=>`<tr><td>${v}</td><td>${wolse["예측값 리스트"][i]}</td></tr>`).join('')}
+                </tbody>
+              </table>
+              <div class="chart-section">
+                <img src="${wolse.image_url}" alt="월세 그래프">
+              </div>
+            </div>
+          </div>
+        `;
       }
-
-      // ----------------------
-      // performance 변환 (배열 안에 객체)
-      // ----------------------
-      for (let type in data.performance) { // 전세, 월세
-        for (let size in data.performance[type]) {
-          let perf = data.performance[type][size];
-          result.performance[type].push({
-            면적: size,
-            RMSE: perf.RMSE,
-            R2: perf.R2,
-            MAE: perf.MAE
-          });
-        }
-      }
-
-      return result;
+      resultArea.setAttribute('aria-busy','false');
+      resultArea.innerHTML = html;
     }
-
 
     async function fetchModel(csrftoken) {
-        try {
-            const modelSel   = document.getElementById('modelSelect');
-            // 서버 URL을 호출
-            const response = await fetch('/pfpa/api/', {
-                method: "POST",                      // POST 요청
-                headers: {
-                    "Content-Type": "application/json",  // JSON 형식 명시
-                    "X-CSRFToken": csrftoken
-                },
-                body: JSON.stringify({
-                    TYPE : modelSel.value
-                })   // JS 객체 → JSON 문자열 변환
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            // JSON 파싱
-            const model = await response.json();
-            jsonData = extractData(model)
-            // 렌더링
-            renderResult(jsonData,model.img);
-
-        } catch (e) {
-            showError(e);
-        }
-    }
-
-    // 조회 버튼 핸들러
-    searchBtn.addEventListener('click', async () => {
-      const model = modelSel.value;
-      showLoading();
-
-      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-console.log(csrftoken)
-      try{
-        await fetchModel(csrftoken)
-      }catch(e){
+      try {
+        const response = await fetch('/pfpa/api/', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+          },
+          body: JSON.stringify({ TYPE: modelSel.value })
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const jsonData = await response.json();
+        renderResult(jsonData);
+      } catch(e) {
         showError(e);
       }
+    }
 
+    searchBtn.addEventListener('click', async () => {
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      showLoading();
+      await fetchModel(csrftoken);
     });
 
-    // Enter 키로도 조회 가능
     modelSel.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        searchBtn.click();
-      }
+      if (e.key === 'Enter') searchBtn.click();
     });
   </script>
 </body>

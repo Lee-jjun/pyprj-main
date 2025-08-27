@@ -7,6 +7,7 @@ from matplotlib import font_manager, rc
 
 from bbs.utils.common_files import FileUtils
 from bbs.utils.fonts import setup_matplotlib_fonts
+import json
 
 # def engine1():
 #     ##################################################
@@ -749,6 +750,9 @@ def regression_prediction():
     df['면적_구간'] = pd.cut(df['전용면적(㎡)'], bins=bins, labels=labels, right=False)
     df['월'] = df['거래일'].dt.to_period('M')
     monthly_demand = df.groupby(['월', '전월세구분', '면적_구간']).size().reset_index(name='수요량')
+    print("#####################################")
+    print(monthly_demand)
+    print("#####################################")
     monthly_demand['월'] = monthly_demand['월'].dt.to_timestamp()
     monthly_demand_full = monthly_demand.groupby('월').size().reset_index()
     monthly_demand_full['month_index'] = np.arange(len(monthly_demand_full))
@@ -816,14 +820,10 @@ def regression_prediction():
             plt.legend()
             plt.grid(True)
 
-            print("$$$$$$$$$$$$$$$$$$$$$$$")
             image_filename = f"linear_regression_{rent_type}_{area_label}.png"
            
-            print(image_filename)
             image_url = FileUtils().savePngToPath(image_filename)
-            # image_url = "test/"
-            print(image_url)
-            print("$$$$$$$$$$$$$$$$$$$$$$$")
+           
             # 요청된 형식으로 데이터 구조화
             area_result = {
                 area_label: [
@@ -868,8 +868,71 @@ def regression_prediction():
     
     # 최종 예측 이미지 저장 및 반환
     # final_image_url = FileUtils().savePngToPath("final_linear_regression.png")
+    jeonse = extract_full(final_results,"전세")
+    wolse  = extract_full(final_results,"월세")
+    # print("#################extract_full#########################")
+    # 전세 , 월세를 리스트로 묶기
+    # print("#################extract_full#########################")
+    merged = {}
+    for area in jeonse.keys():
+        merged[area] = {
+            "jeonse": jeonse[area],
+            "wolse": wolse[area]
+        }
+    # print(json.dumps(merged, ensure_ascii=False, indent=2))
     
-    return final_results
+    return merged
+
+
+def extract_full(data,category: str):
+    """
+    category: "전세" 또는 "월세"
+    """
+    # data = { ... } 
+    results = {}
+    for item in data[category]:
+        for size, details in item.items():
+            entry = {}
+            for d in details:
+                if "훈련성능" in d:
+                    entry["훈련성능"] = d["훈련성능"]
+                if "테스트 성능" in d:
+                    entry["테스트 성능"] = d["테스트 성능"]
+                if "과적합 여부" in d:
+                    entry["과적합 여부"] = d["과적합 여부"]
+                if "실제값 리스트" in d:
+                    entry["실제값 리스트"] = d["실제값 리스트"]
+                if "예측값 리스트" in d:
+                    entry["예측값 리스트"] = d["예측값 리스트"]
+                if "image_url" in d:
+                    entry["image_url"] = d["image_url"]
+            results[size] = entry
+    return results
+
+# # 전세 / 월세 결과 추출
+# jeonse_results = extract_full("전세")
+# wolse_results = extract_full("월세")
+
+# # 출력
+# print(" 전세 결과")
+# for size, vals in jeonse_results.items():
+#     print(f"[{size}]")
+#     print("훈련성능:", vals["훈련성능"])
+#     print("테스트 성능:", vals["테스트 성능"])
+#     print("과적합 여부:", vals["과적합 여부"])
+#     print("실제값:", vals["실제값 리스트"])
+#     print("예측값:", vals["예측값 리스트"])
+#     print()
+
+# print(" 월세 결과")
+# for size, vals in wolse_results.items():
+#     print(f"[{size}]")
+#     print("훈련성능:", vals["훈련성능"])
+#     print("테스트 성능:", vals["테스트 성능"])
+#     print("과적합 여부:", vals["과적합 여부"])
+#     print("실제값:", vals["실제값 리스트"])
+#     print("예측값:", vals["예측값 리스트"])
+#     print()
 
 def engine(actionType):
     print(f" ACTION TYPE ====== {actionType}")

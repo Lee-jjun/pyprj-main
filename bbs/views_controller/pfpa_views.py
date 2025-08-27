@@ -63,7 +63,6 @@ class PriceForPerArea(View):
         
     def post(self, request, *args, **kwargs):
         try:
-            print(" ==============dffdfdfd============== ")
             # 요청 JSON 읽기
             body = json.loads(request.body)
             print("받은 JSON:", body)
@@ -71,9 +70,7 @@ class PriceForPerArea(View):
             eventType = body.get("TYPE")
             # engine 호출 (예시)
             result = engine(eventType)
-            print(f">>>>>>>>> {result} <<<<<<<<<<")
             result = convert(result)
-            print(f"RESULT {result}")
             return JsonResponse(result, safe=False)
         except Exception as e:
             return JsonResponse({"ERROR": str(e)}, status=500)
