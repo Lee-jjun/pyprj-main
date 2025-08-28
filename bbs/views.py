@@ -231,34 +231,24 @@ class PriceRangeForecastPage(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         # run_analysis 함수 실행
         result = run_analysis()
-        # JavaScript가 안전하게 사용할 수 있도록 JSON 데이터를 직렬화합니다.
-        # 이전에 발생했던 오류를 수정하기 위해 json.dumps를 사용합니다.
-        if 'accuracy' in result and isinstance(result['accuracy'], dict):
-            context['accuracy_json'] = json.dumps(result['accuracy'])
-        else:
-            context['accuracy_json'] = '{}'
-
-        if 'graph_urls' in result and isinstance(result['graph_urls'], dict):
-            context['graph_urls_json'] = json.dumps(result['graph_urls'])
-        else:
-            context['graph_urls_json'] = '{}'
         
-        # 다른 모든 결과를 context에 직접 추가
+        # result 딕셔너리를 context에 그대로 추가합니다.
+        # json_script 템플릿 태그가 이 데이터를 안전하게 직렬화합니다.
         context['result'] = result
         
         return context
 
     def get(self, request, *args, **kwargs):
-        # GET 요청이 들어올 때 context_data를 사용하여 렌더링
         context = self.get_context_data()
         return self.render_to_response(context)
-        
+
     def post(self, request, *args, **kwargs):
-        # POST 요청이 들어와도 동일한 페이지를 렌더링하도록 처리
         context = self.get_context_data()
         return self.render_to_response(context)
+
     
 #####################################
 # 가격대별 예측 페이지 뷰 END
