@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ai-X APT | 부동산 전월세 가격 예측 서비스">
     <meta name="author" content="Ai-X APT Team">
-    <title>{% block title %}Ai-X APT 부동산 예측 서비스{% endblock %}</title>
+    <title>{% block title %}Ai-X APT 부동산 전월세별 수요량 예측 서비스{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'bbs/css/style.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
@@ -87,14 +87,14 @@
     <!-- 1. 로딩 화면 -->
     <div id="loading-screen" class="hidden">
         <div class="loading-spinner"></div>
-        <p>예측중</p>
+        <p>집주인과 협상 중</p>
     </div>
 
     <div class="content-wrapper">
         <header class="main-header">
             {% block header %}
                 <a href="{% url 'bbs:index' %}" class="header-button">
-                    Ai-X APT 부동산 전/월세 예측 서비스
+                    Ai-X APT 부동산 전/월세별 수요량 예측 서비스
                 </a>
             {% endblock %}
         </header>
