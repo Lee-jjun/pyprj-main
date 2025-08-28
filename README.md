@@ -48,8 +48,12 @@ python tools/clean_nbsp.py
 
 실행 결과
 
-문제가 없으면 👌 no issue: ...
+문제가 없으면 no issue: ...
 
-수정된 파일이 있으면 ✅ cleaned: ...
+수정된 파일이 있으면 cleaned: ...
 
 마지막에 요약(총 파일 수 / 수정된 파일 수 / 정상 파일 수)이 표시됩니다.
+
+<img width="1220" height="790" alt="image" src="https://github.com/user-attachments/assets/edcdc9c3-0ecc-4dde-b410-25f360410d3b" />
+
+<img width="1073" height="857" alt="Figure 2025-08-22 170257" src="https://github.com/user-attachments/assets/0856b02b-d064-4ddd-8dd8-a4666d1a5010" />

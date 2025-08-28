@@ -4,22 +4,27 @@
 {% block title %}가격대별 전월세 예측{% endblock %}
 
 {% block content %}
+
 <style>
-    /* 이 부분은 웹 페이지의 전체적인 디자인을 담당하는 CSS 코드입니다. */
+    /* 웹 페이지 전체 디자인 변수 */
     :root {
-        --body-bg: #fdfdfd; /* 배경색 */
-        --container-bg: #fff; /* 컨테이너 배경색 */
-        --main-text: #4a4a4a; /* 기본 글자색 */
-        --heading-text: #2c3e50; /* 제목 글자색 */
-        --border-color: #e0e0e0; /* 경계선 색상 */
-        --code-bg: #f8f9fa; /* 코드 셀 배경색 */
-        --code-text: #5a5a5a; /* 코드 글자색 */
-        --accent-color: #007bff; /* 강조 색상 (파란색) */
-        --link-hover: #0056b3; /* 링크 마우스 오버 색상 */
+        --body-bg: #fdfdfd;
+        --container-bg: #fff;
+        --main-text: #4a4a4a;
+        --heading-text: #2c3e50;
+        --border-color: #e0e0e0;
+        --code-bg: #f8f9fa;
+        --code-text: #5a5a5a;
+        --accent-color: #007bff;
+        --link-hover: #0056b3;
     }
     
     body {
-        background-color: var(--body-bg);
+        background-image: url("{% static 'images/apt4.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
         font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', Arial, sans-serif;
         line-height: 1.6;
         color: var(--main-text);
@@ -34,7 +39,7 @@
     }
 
     .title {
-        color: var(--heading-text);
+        color: #ffffff;
         text-align: center;
         margin-bottom: 50px;
         font-size: 2.5rem;
@@ -114,41 +119,113 @@
     /* 테이블 컨테이너 스타일 */
     .table-container {
         width: 100%;
-        overflow-x: auto;
+        overflow-x: hidden;
         border: none;
     }
 
     .table-container table {
-        width: 100%; /* 테이블 너비는 유지 */
-        font-size: 0.8rem; /* 글자 크기를 줄여서 표를 더 작게 만듭니다 */
-        border-collapse: collapse; /* 셀 경계를 하나로 합칩니다 */
-        border: 1px solid var(--border-color); /* 테이블 전체에 단일 테두리를 설정합니다 */
-        border-radius: 6px; /* 모서리를 둥글게 만듭니다 */
-        overflow: hidden; /* 둥근 모서리에 맞게 내용이 잘리도록 합니다 */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 부드러운 그림자 효과를 추가합니다 */
+        width: 100%;
+        table-layout: fixed;
+        font-size: 0.7rem;
+        border-collapse: collapse;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
     .table-container th, 
     .table-container td {
-        padding: 8px 10px; /* 셀 내부 여백을 줄입니다 */
-        text-align: left; /* 텍스트를 왼쪽 정렬합니다 */
-        border: none; /* 셀 내부의 기존 테두리를 제거합니다 */
+        padding: 4px;
+        text-align: left;
+        border: none;
+        word-wrap: break-word;
     }
 
     .table-container th {
-        background-color: #f7f7f7; /* 헤더 배경색을 밝은 회색으로 설정합니다. */
-        font-weight: 600; /* 글씨를 더 굵게 만듭니다. */
+        background-color: #f7f7f7;
+        font-weight: 600;
+    }
+
+    /* 구별 군집 분류 데이터 전용 스타일 (작고 깔끔한 디자인) */
+    #cluster-table-container {
+        width: 100%;
+        max-width: 100%; /* 부모 컨테이너 너비를 넘지 않도록 설정 */
+        overflow-x: auto; /* 내용이 넘치면 스크롤바 생성 */
+        border: none; /* 외부 테두리 제거 */
+        border-radius: 8px; /* 살짝 둥근 모서리 */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* 은은한 그림자 */
+        background-color: var(--container-bg);
+        padding: 0; /* 내부 패딩 제거 */
+        display: block;
+        margin: 20px auto; /* 중앙 정렬 및 위아래 여백 */
+    }
+    
+    #cluster-table-container table {
+        width: 100%;
+        border-collapse: collapse; /* 셀 테두리 병합 */
+        font-size: 0.75rem; /* 글자 크기 약간 작게 */
+        color: var(--main-text);
+        table-layout: auto; /* 내용에 따라 열 너비 자동 조정 */
+        min-width: 600px; /* 최소 너비를 지정하여 너무 좁아지는 것 방지 */
+    }
+
+    #cluster-table-container th, 
+    #cluster-table-container td {
+        padding: 8px 12px; /* 셀 내부 여백 줄이기 */
+        text-align: left;
+        border-bottom: 1px solid #eee; /* 얇은 하단 구분선 */
+        white-space: nowrap; /* 줄바꿈 방지 */
+        overflow: hidden;
+        text-overflow: ellipsis; /* 내용이 넘치면 ...으로 표시 */
+        max-width: 150px; /* 셀 최대 너비 지정 (선택 사항, 필요시 조정) */
+    }
+
+    #cluster-table-container th {
+        background-color: #fcfcfc; /* 헤더 배경색 아주 연하게 */
+        color: var(--heading-text);
+        font-weight: 500; /* 헤더 폰트 굵기 약간 줄임 */
+        border-bottom: 2px solid #ddd; /* 헤더 하단에 더 진한 구분선 */
+    }
+
+    #cluster-table-container tr:last-child td {
+        border-bottom: none; /* 마지막 행 하단선 제거 */
+    }
+
+    #cluster-table-container tr:nth-child(even) {
+        background-color: #f9f9f9; /* 짝수 행 배경색 지정 (얼터네이팅 로우) */
+    }
+    
+    #cluster-table-container tr:hover {
+        background-color: #f0f8ff; /* 호버 시 아주 연한 파란색 배경 */
+    }
+    
+    /* 첫 번째 열(구 이름) 스타일 */
+    #cluster-table-container td:first-child {
+        font-weight: 600; /* 구 이름 강조 */
+        color: #34495e; /* 약간 더 어두운 색상 */
+    }
+
+    /* 금액대 열 (세 번째 열) 오른쪽 정렬 */
+    #cluster-table-container th:nth-child(3),
+    #cluster-table-container td:nth-child(3) {
+        text-align: center;
+    }
+
+    /* 마지막 열 (클러스터) 가운데 정렬 */
+    #cluster-table-container th:last-child,
+    #cluster-table-container td:last-child {
+        text-align: center;
     }
 
     /* 정확도 목록 컨테이너 스타일 */
     .accuracy-list {
         width: 100%;
         margin-top: 30px;
-        /* 기존 테두리 제거 */
         border: none;
         border-radius: 6px;
         overflow: hidden;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 경계선 대신 그림자 효과 추가 */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
     .accuracy-list-item {
         display: flex;
@@ -229,19 +306,63 @@
     a:hover {
         color: var(--link-hover);
     }
+    
+    /* 테이블 버튼 컨테이너 (버튼을 나란히 배치) */
+    .table-button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    /* 각 테이블 섹션 (개별 버튼과 표를 감쌈) */
+    .table-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        min-width: 300px;
+        text-align: center;
+    }
+    
+    /* 표 컨테이너 (가운데 정렬) */
+    #jeonse-table-container,
+    #wolse-table-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* 모델 버튼 컨테이너 */
+    .model-button-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
 
     /* 반응형 디자인 */
     @media (max-width: 768px) {
         .notebook-container { padding: 20px 10px; }
         .title { font-size: 2rem; margin-bottom: 30px; }
         .cell { margin-bottom: 20px; }
+        .table-button-container { flex-direction: column; align-items: center; }
+        .table-section { width: 100%; }
     }
 </style>
+
 
 <div class="notebook-container">
     <h1 class="title">가격대별 전/월세 예측 페이지</h1>
     
     {% if result %}
+        {{ result.prophet|json_script:"prophet_data" }}
+        {{ result.linear_regression|json_script:"linear_regression_data" }}
+        {{ result.random_forest|json_script:"random_forest_data" }}
+    
         {% if 'ERROR' in result %}
             <div class="cell error-message">
                 <p><strong>오류 발생:</strong> {{ result.ERROR }}</p>
@@ -261,13 +382,14 @@ import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from prophet import Prophet
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import time
-
-mpl.use('Agg')
+mpl.use('Agg')  # 비대화형 백엔드로 설정
                     </code></pre>
                 </div>
             </div>
@@ -302,23 +424,31 @@ df_wolse = df[df['전월세구분'] == '월세'].copy()
 demand_jeonse = df_jeonse.groupby(['구', '금액대']).size().unstack(fill_value=0)
 demand_wolse = df_wolse.groupby(['구', '금액대']).size().unstack(fill_value=0)
                     </code></pre>
-                </div>
                 <div class="output-cell">
-                    <h4>전세 수요량 데이터</h4>
-                    <div class="table-container">
-                        {{ result.demand_jeonse_html|safe }}
+                    <h4>구별 전월세 수요량 데이터</h4> 
+                    
+                    <div class="table-button-container">
+                        <button id="show-jeonse-btn" class="gu-button">전세 데이터 출력</button>
+                        <button id="show-wolse-btn" class="gu-button">월세 데이터 출력</button>
                     </div>
-                    <h4>월세 수요량 데이터</h4>
-                    <div class="table-container">
-                        {{ result.demand_wolse_html|safe }}
+
+                    <div id="jeonse-table-container" style="display: none;">
+                        <h4>전세 수요량 데이터</h4>
+                        <div class="table-container">
+                            {{ result.demand_jeonse_html|safe }}
+                        </div>
+                    </div>
+                    
+                    <div id="wolse-table-container" style="display: none;">
+                        <h4>월세 수요량 데이터</h4>
+                        <div class="table-container">
+                            {{ result.demand_wolse_html|safe }}
+                        </div>
                     </div>
                     <h3>구별 수요량 분석 결과</h3>
                     <a href="{{ result.images.0 }}" target="_blank">
                         <img src="{{ result.images.0 }}" alt="구별 수요량 히트맵" class="result-image">
                     </a>
-                    {% if result.demand_jeonse_html and result.demand_wolse_html %}
-                    <br>
-                    {% endif %}
                 </div>
             </div>
 
@@ -342,7 +472,7 @@ reduced_data = pca.fit_transform(scaled_demand)
                 </div>
                 <div class="output-cell">
                     <h4>구별 군집 분류 데이터</h4>
-                    <div class="table-container">
+                    <div id="cluster-table-container">
                         {{ result.cluster_html|safe }}
                     </div>
                     <br>
@@ -350,69 +480,91 @@ reduced_data = pca.fit_transform(scaled_demand)
                     <a href="{{ result.images.1 }}" target="_blank">
                         <img src="{{ result.images.1 }}" alt="구별 수요 패턴 군집화" class="result-image">
                     </a>
-                    {% if result.cluster_html %}
-                    {% endif %}
                 </div>
             </div>
 
-            {% if 'accuracy' in result and result.accuracy %}
+            {% if result.prophet or result.linear_regression or result.random_forest %}
             <div class="cell">
                 <div class="code-cell">
-                    <h3>Prophet 모델 예측 &amp; 정확도 평가</h3>
+                    <h3>Prophet, linear_regression, random_forest 모델 예측 &amp; 정확도 평가</h3>
                     <pre><code class="language-python">
-# 시계열 예측 및 정확도 지표 반환
-time_series_data = df.groupby(['계약년월', '구']).size().reset_index(name='거래건수')
-gu_list = time_series_data['구'].unique()
+# 각 모델별 예측 및 정확도 지표 반환 로직
+# (Prophet, 선형 회귀, 랜덤 포레스트)
+for gu in gu_list:
+    gu_data = time_series_data[time_series_data['구'] == gu].copy()
+    gu_data['ds'] = gu_data['계약년월']
+    gu_data['y'] = gu_data['거래건수']
 
-for i, gu in enumerate(gu_list):
-    plt.figure(figsize=(10, 6)) # 각 구별로 새로운 Figure 생성
-    gu_data = time_series_data[time_series_data['구'] == gu].rename(columns={'계약년월': 'ds', '거래건수': 'y'})
-    if len(gu_data) > 3:
-        train_data = gu_data[:-3]
-        test_data = gu_data[-3:]
-        m1 = Prophet(seasonality_mode='multiplicative', daily_seasonality=False)
-        m1.fit(train_data)
-        future_test = m1.make_future_dataframe(periods=3, freq='M')
-        forecast_test = m1.predict(future_test)
-        test_forecast = forecast_test['yhat'].tail(3)
-        y_true = test_data['y'].values
-        y_pred = test_forecast.values
+# Prophet 모델 예측
+    try:
+        m = Prophet(seasonality_mode='multiplicative', daily_seasonality=False)
+        m.fit(gu_data.iloc[:-3][['ds', 'y']])
+        # future = m.make_future_dataframe(periods=3, freq='M')
+        future_dates = pd.to_datetime(['2023-08-01', '2023-09-01', '2023-10-01'])
+        future = pd.DataFrame({'ds': future_dates})
+        forecast = m.predict(future)
+        y_true = gu_data['y'].iloc[-3:].values
+        y_pred = forecast['yhat'].iloc[-3:].values
+                    
         mae = mean_absolute_error(y_true, y_pred)
         rmse = np.sqrt(mean_squared_error(y_true, y_pred))
         mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100 if np.all(y_true != 0) else float('inf')
-        accuracy_results[gu] = {'MAE': mae, 'RMSE': rmse, 'MAPE': mape}
-        m2 = Prophet(seasonality_mode='multiplicative', daily_seasonality=False)
-        m2.fit(gu_data)
-        future_final = m2.make_future_dataframe(periods=3, freq='M')
-        forecast_final = m2.predict(future_final)
-        forecast_df = forecast_final[['ds', 'yhat']].tail(3)
-        bar_data = pd.concat([gu_data, forecast_df.rename(columns={'yhat': 'y'})], ignore_index=True)
-        bar_data['ds_str'] = bar_data['ds'].dt.strftime('%Y-%m')
-        bar_data['type'] = '실제'
-        bar_data.loc[bar_data['ds'].isin(forecast_df['ds']), 'type'] = '예측'
-        sns.barplot(x='ds_str', y='y', hue='type', dodge=False, data=bar_data)
-        plt.title(f'{gu} 거래량 예측', fontsize=15)
-        plt.xlabel('날짜', fontsize=12)
-        plt.ylabel('거래 건수', fontsize=12)
-        plt.legend(title='데이터 유형', loc='upper left', fontsize=10)
-        plt.xticks(rotation=45, ha='right')
                     
-    else:
-        plt.text(0.5, 0.5, '데이터 부족', ha='center', va='center', fontsize=20, color='red', transform=plt.gca().transAxes)
-        plt.title(f'{gu} 거래량', fontsize=15)
-        plt.xlabel('날짜', fontsize=12)
-        plt.ylabel('거래 건수', fontsize=12)
-        plt.xticks([])
-        plt.yticks([])
+        prophet_results['accuracy'][gu] = {'MAE': mae, 'RMSE': rmse, 'MAPE': mape}
 
-                        # 각 구별 개별 그래프 및 정확도 지표 생성 로직
+# 선형 회귀 모델 예측
+    try:
+        gu_data['time_idx'] = (gu_data['ds'] - gu_data['ds'].min()).dt.days
+        X_train = gu_data[['time_idx']].iloc[:-3]
+        y_train = gu_data['y'].iloc[:-3]
+        X_test = gu_data[['time_idx']].iloc[-3:]
+                        
+        model_lr = LinearRegression()
+        model_lr.fit(X_train, y_train)
+        y_pred = model_lr.predict(X_test)
+                        
+        y_true = gu_data['y'].iloc[-3:].values
+                        
+        mae = mean_absolute_error(y_true, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100 if np.all(y_true != 0) else float('inf')
+                        
+        linear_regression_results['accuracy'][gu] = {'MAE': mae, 'RMSE': rmse, 'MAPE': mape}
+
+# 랜덤 포레스트 회귀 모델 예측
+    try:
+        gu_data['time_idx'] = (gu_data['ds'] - gu_data['ds'].min()).dt.days
+        X_train = gu_data[['time_idx']].iloc[:-3]
+        y_train = gu_data['y'].iloc[:-3]
+        X_test = gu_data[['time_idx']].iloc[-3:]
+                    
+        model_rf = RandomForestRegressor(n_estimators=100, random_state=42)
+        model_rf.fit(X_train, y_train)
+        y_pred = model_rf.predict(X_test)
+                    
+        y_true = gu_data['y'].iloc[-3:].values
+                    
+        mae = mean_absolute_error(y_true, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100 if np.all(y_true != 0) else float('inf')
+                    
+        random_forest_results['accuracy'][gu] = {'MAE': mae, 'RMSE': rmse, 'MAPE': mape}
+                    
+
+
                     </code></pre>
                 </div>
                 <div class="output-cell" style="gap: 50px;">
-                    <h3>구별 예측 결과 및 정확도</h3>
+                    <h3>모델별 예측 결과 및 정확도 비교</h3>
+                    <div class="model-button-container">
+                        <button class="gu-button model-button" data-model="prophet">Prophet</button>
+                        <button class="gu-button model-button" data-model="linear_regression">linear regression</button>
+                        <button class="gu-button model-button" data-model="random_forest">random forest</button>
+                    </div>
+
                     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                        {% for gu, metrics in result.accuracy.items %}
-                            <button class="gu-button" data-gu="{{ gu }}">
+                        {% for gu in result.prophet.accuracy %}
+                            <button class="gu-button select-gu-button" data-gu="{{ gu }}">
                                 {{ gu }}
                             </button>
                         {% endfor %}
@@ -426,7 +578,7 @@ for i, gu in enumerate(gu_list):
 
                     <div id="initial-message" style="text-align: center;">
                         <p style="font-size: 1.2rem; color: #7f8c8d;">
-                            위 버튼을 클릭하여 각 구의 예측 결과와 정확도 지표를 확인하세요.
+                            모델과 구를 선택하여 예측 결과와 정확도 지표를 확인하세요.
                         </p>
                     </div>
                 </div>
@@ -442,70 +594,130 @@ for i, gu in enumerate(gu_list):
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const guButtons = document.querySelectorAll('.gu-button');
+        const guButtons = document.querySelectorAll('.select-gu-button');
+        const modelButtons = document.querySelectorAll('.model-button');
         const accuracyGraphContainer = document.querySelector('.accuracy-graph-container');
         const guNameElement = document.getElementById('gu-name');
         const predictionGraph = document.getElementById('prediction-graph');
         const accuracyMetrics = document.getElementById('accuracy-metrics');
         const initialMessage = document.getElementById('initial-message');
         
-        const accuracyData = JSON.parse('{{ accuracy_json | safe }}' || '{}');
-        const graphUrls = JSON.parse('{{ graph_urls_json | safe }}' || '{}');
+        // 전세/월세 테이블 관련 로직 (기존 코드와 동일)
+        const showJeonseBtn = document.getElementById('show-jeonse-btn');
+        const jeonseTableDiv = document.getElementById('jeonse-table-container');
+        const showWolseBtn = document.getElementById('show-wolse-btn');
+        const wolseTableDiv = document.getElementById('wolse-table-container');
 
-        // 첫 번째 버튼을 활성화하고 데이터를 표시합니다.
-        if (guButtons.length > 0) {
-            guButtons[0].classList.add('active');
-            displayData(guButtons[0].getAttribute('data-gu'));
-            initialMessage.style.display = 'none';
-            accuracyGraphContainer.style.display = 'flex';
+        showJeonseBtn.addEventListener('click', function() {
+            jeonseTableDiv.style.display = jeonseTableDiv.style.display === 'block' ? 'none' : 'block';
+            wolseTableDiv.style.display = 'none';
+        });
+
+        showWolseBtn.addEventListener('click', function() {
+            wolseTableDiv.style.display = wolseTableDiv.style.display === 'block' ? 'none' : 'block';
+            jeonseTableDiv.style.display = 'none';
+        });
+
+        // json_script를 사용하여 안전하게 데이터 가져오기
+        const prophetScript = document.getElementById('prophet_data');
+        const linearRegressionScript = document.getElementById('linear_regression_data');
+        const randomForestScript = document.getElementById('random_forest_data');
+
+        const prophetData = prophetScript ? JSON.parse(prophetScript.textContent) : {};
+        const linearRegressionData = linearRegressionScript ? JSON.parse(linearRegressionScript.textContent) : {};
+        const randomForestData = randomForestScript ? JSON.parse(randomForestScript.textContent) : {};
+
+        const allModelData = {
+            'prophet': prophetData,
+            'linear_regression': linearRegressionData,
+            'random_forest': randomForestData
+        };
+
+        // 초기 선택값 설정
+        let selectedGu = guButtons.length > 0 ? guButtons[0].getAttribute('data-gu') : null;
+        let selectedModel = 'prophet';
+
+        // 초기 'prophet' 모델 버튼 활성화
+        const initialModelButton = document.querySelector('.model-button[data-model="prophet"]');
+        if (initialModelButton) {
+            initialModelButton.classList.add('active');
         }
 
+        // 초기 '구' 버튼 활성화 및 데이터 표시
+        if (selectedGu) {
+            guButtons[0].classList.add('active');
+            displayData(selectedGu, selectedModel);
+        } else {
+            initialMessage.style.display = 'block';
+            accuracyGraphContainer.style.display = 'none';
+        }
+
+        // 구 버튼 클릭 이벤트 리스너
         guButtons.forEach(button => {
             button.addEventListener('click', function() {
                 guButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-                const gu = this.getAttribute('data-gu');
-                displayData(gu);
+                selectedGu = this.getAttribute('data-gu');
+                displayData(selectedGu, selectedModel);
             });
         });
 
-        // 선택된 '구'에 대한 데이터를 표시하는 함수
-        function displayData(gu) {
-            const metrics = accuracyData[gu];
-            const graphUrl = graphUrls[gu];
+        // 모델 버튼 클릭 이벤트 리스너
+        modelButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                modelButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                selectedModel = this.getAttribute('data-model');
+                if (selectedGu) {
+                    displayData(selectedGu, selectedModel);
+                }
+            });
+        });
+        
+        // 선택된 '구'와 '모델'에 대한 데이터를 표시하는 함수
+        function displayData(gu, model) {
+            const modelData = allModelData[model];
+            const metrics = modelData && modelData.accuracy ? modelData.accuracy[gu] : null;
+            const graphUrl = modelData && modelData.graph_urls ? modelData.graph_urls[gu] : null;
 
-            // 데이터가 있는지 확인하고, 없으면 기본값으로 대체합니다.
-            const mae = metrics ? metrics.MAE : 'N/A';
-            const rmse = metrics ? metrics.RMSE : 'N/A';
-            const mape = metrics ? metrics.MAPE : 'N/A';
-
-            // 유한한 숫자인지 확인하고 소수점 2자리로 포맷하는 함수
-            function formatValue(value) {
-                return isFinite(value) ? value.toFixed(2) : value;
-            }
-            dataPrint = `
-                <div class="accuracy-list-item">
-                    <h4>MAE (평균 절대 오차)</h4>
-                    <p>${formatValue(mae)}</p>
-                </div>
-                <div class="accuracy-list-item">
-                    <h4>RMSE (평균 제곱근 오차)</h4>
-                    <p>${formatValue(rmse)}</p>
-                </div>
-                <div class="accuracy-list-item">
-                    <h4>MAPE (%) (평균 절대 백분율 오차)</h4>
-                    <p>${formatValue(mape)}</p>
-                </div>
-            `;
-            console.log(dataPrint)
-            accuracyMetrics.innerHTML = dataPrint;
             guNameElement.textContent = gu;
-            predictionGraph.src = graphUrl;
-            predictionGraph.alt = `${gu} 시계열 예측 그래프`;
-            
-            //initialMessage.style.display = 'none';
-            accuracyGraphContainer.style.display = 'flex';
-            document.querySelector(".accuracy-graph-container").style.display = "block";
+            //SinitialMessage.style.display = 'none';
+            accuracyGraphContainer.style.display = 'block';
+
+            if (graphUrl) {
+                // 그래프가 있는 경우에만 표시
+               // predictionGraph.style.display = 'block';
+                predictionGraph.src = graphUrl;
+                predictionGraph.alt = `${gu} ${model} 모델 예측 그래프`;
+
+                // 정확도 지표가 유효하지 않을 경우 '데이터 부족'으로 표시
+                const mae = (metrics && isFinite(metrics.MAE)) ? (metrics.MAE).toFixed(2) : '데이터 부족';
+                const rmse = (metrics && isFinite(metrics.RMSE)) ? (metrics.RMSE).toFixed(2) : '데이터 부족';
+                const mape = (metrics && isFinite(metrics.MAPE)) ? (metrics.MAPE).toFixed(2) + '%' : '데이터 부족';
+
+                accuracyMetrics.innerHTML = `
+                    <div class="accuracy-list-item">
+                        <h4>MAE (평균 절대 오차)</h4>
+                        <p>${mae}</p>
+                    </div>
+                    <div class="accuracy-list-item">
+                        <h4>RMSE (평균 제곱근 오차)</h4>
+                        <p>${rmse}</p>
+                    </div>
+                    <div class="accuracy-list-item">
+                        <h4>MAPE (%) (평균 절대 백분율 오차)</h4>
+                        <p>${mape}</p>
+                    </div>
+                `;
+            } else {
+                // 그래프 URL이 없는 경우
+                predictionGraph.style.display = 'none';
+                accuracyMetrics.innerHTML = `
+                    <p style="text-align: center; color: #7f8c8d; padding: 20px;">
+                        이 구는 데이터가 부족하여 예측 결과를 표시할 수 없습니다.
+                    </p>
+                `;
+            }
         }
     });
 </script>

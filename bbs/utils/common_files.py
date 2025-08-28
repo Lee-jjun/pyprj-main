@@ -2,7 +2,10 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import io
+import base64
+import warnings
+warnings.filterwarnings("ignore")
 #파일 유틸리티 
 class FileUtils:
     
@@ -29,15 +32,23 @@ class FileUtils:
         return pd.read_csv(file_path, encoding=encoding, sep=sep)
 
     #차트 이미지로 만들기
-    def savePngToPath(self,filename,closeFlag):
-        s_filename = self.img_dir + "/" +filename
+    # def savePngToPath(self,filename,closeFlag=False):
+    #     s_filename = self.img_dir + "/" +filename
+    #     plt.savefig(s_filename)
+    #     if closeFlag == True:
+    #         plt.close()
         
-        print("=============== filename ==============")
-        print({s_filename})
-        print("=============== filename ==============")
-        plt.savefig(s_filename)
+        
+    #     return f'/static/images/{filename}'
+
+    def savePngToPath(self,filename,closeFlag=False):
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format="png")   # png, jpg 등 가능
+        buffer.seek(0)
         if closeFlag == True:
             plt.close()
-        
-        return f'/static/images/{filename}'
-        
+        # base64 인코딩
+        img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
+        buffer.close()
+        return img_base64
+            

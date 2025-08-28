@@ -7,7 +7,8 @@ from matplotlib import font_manager, rc
 
 from bbs.utils.common_files import FileUtils
 from bbs.utils.fonts import setup_matplotlib_fonts
-
+# import json
+import traceback
 # def engine1():
 #     ##################################################
 #     # 1. 데이터 불러오기 및 전처리
@@ -291,7 +292,7 @@ def LRegression():
 # Decision Tree Regression (결정 트리 회귀): 
 # 데이터를 특정 조건에 따라 나누는 '결정 트리' 구조를 사용하여 예측합니다.
 from sklearn.tree import DecisionTreeRegressor
-
+                         
 def DTreeRegressor():
 
     # 운영체제에 맞는 한글 폰트 설정
@@ -722,6 +723,198 @@ def allRegress():
         return all_results
 
 
+# 1. RandomForestRegressor
+# 2. LinearRegression
+# 3. DecisionTreeRegressor
+# 4. GradientBoostingRegressor
+def performance_test(testType):
+    """
+    회귀 모델을 사용하여 아파트 전월세 수요를 예측하고,
+    결과를 딕셔너리로 반환합니다.
+    """
+    setup_matplotlib_fonts()
+
+    try:
+        df = FileUtils().getCsv("아파트(전월세)_실거래가_all.csv")
+    except (UnicodeDecodeError, FileNotFoundError):
+        print("CSV 파일 읽기 실패")
+        return {}
+
+    # 날짜 생성
+    df['거래일'] = pd.to_datetime(df['계약년월'].astype(str) +
+                                  df['계약일'].astype(str).str.zfill(2),
+                                  format='%Y%m%d')
+
+    # 면적 구간
+    bins = [0, 40, 60, 85, 100, 135, 200]
+    labels = ['~40㎡', '40~60㎡', '60~85㎡', '85~100㎡', '100~135㎡', '135㎡~']
+    df['면적_구간'] = pd.cut(df['전용면적(㎡)'], bins=bins, labels=labels, right=False)
+
+    df['월'] = df['거래일'].dt.to_period('M')
+    monthly_demand = df.groupby(['월', '전월세구분', '면적_구간']).size().reset_index(name='수요량')
+    monthly_demand['월'] = monthly_demand['월'].dt.to_timestamp()
+
+    # month_index
+    monthly_demand_full = monthly_demand.groupby('월').size().reset_index()
+    monthly_demand_full['month_index'] = np.arange(len(monthly_demand_full))
+    monthly_demand = pd.merge(monthly_demand, monthly_demand_full[['월', 'month_index']],
+                              on='월', how='left')
+
+    # 미래 3개월
+    predict_dates = pd.date_range(start='2025-09', end='2025-10', freq='MS')
+    min_date = monthly_demand['월'].min()
+    predict_date_indices = [(d.year - min_date.year) * 12 + (d.month - min_date.month)
+                            for d in predict_dates]
+
+    final_results = {'전세': [], '월세': []}
+
+    for rent_type in ['전세', '월세']:
+        for area_label in labels:
+            subset_df = monthly_demand[(monthly_demand['전월세구분'] == rent_type) &
+                                       (monthly_demand['면적_구간'] == area_label)].copy()
+            if len(subset_df) < 6:
+                continue
+
+            X = subset_df[['month_index']]
+            y = subset_df['수요량']
+
+            test_size = 5
+            X_train = X[:-test_size]
+            X_test = X[-test_size:]
+            y_train = y[:-test_size]
+            y_test = y[-test_size:]
+
+            # 모델 선택
+            if testType == "5":
+                model = RandomForestRegressor(random_state=42)
+            elif testType == "6":
+                model = LinearRegression()
+            elif testType == "7":
+                model = DecisionTreeRegressor(random_state=42)
+            elif testType == "8":
+                model = GradientBoostingRegressor(random_state=42)
+
+            model.fit(X_train, y_train)
+
+            # 훈련/테스트 예측
+            y_train_pred = model.predict(X_train)
+            y_test_pred = model.predict(X_test)
+            full_y_pred = np.concatenate([y_train_pred, y_test_pred])
+
+            # 미래 예측
+            predicted_demand_future = model.predict(np.array(predict_date_indices).reshape(-1, 1))
+
+            # === 길이 맞추기 ===
+            combined_y_pred = np.concatenate([full_y_pred, predicted_demand_future])
+            combined_months = list(subset_df['월'].dt.strftime("%Y-%m")) + list(predict_dates.strftime("%Y-%m"))
+
+            # 실제값은 과거값 + 미래(None)
+            combined_y_actual = list(y.astype(int)) + [None] * len(predict_dates)
+
+            # 성능 지표
+            rmse_train = np.sqrt(mean_squared_error(y_train, y_train_pred))
+            r2_train = r2_score(y_train, y_train_pred)
+            mae_train = mean_absolute_error(y_train, y_train_pred)
+
+            rmse_test = np.sqrt(mean_squared_error(y_test, y_test_pred))
+            r2_test = r2_score(y_test, y_test_pred)
+            mae_test = mean_absolute_error(y_test, y_test_pred)
+            overfitting_status = '과적합 의심' if r2_train - r2_test > 0.2 else '양호'
+
+            # 차트
+            plt.figure(figsize=(10, 6))
+            plt.plot(subset_df['월'], y, label='실제 수요량', color='blue', marker='o')
+            plt.plot(subset_df['월'], full_y_pred, label='예측 수요량', color='red', linestyle='--')
+            plt.plot(predict_dates, predicted_demand_future, label='미래 예측', color='green', marker='x')
+            plt.title(f'{area_label} {rent_type} 예측')
+            plt.xlabel('월')
+            plt.ylabel('거래량')
+            plt.legend()
+            plt.grid(True)
+            image_filename = f"linear_regression_{rent_type}_{area_label}.png"
+            image_url = FileUtils().savePngToPath(image_filename)
+
+            # 결과 저장
+            area_result = {
+                area_label: [
+                    {"훈련성능": f"RMSE={rmse_train:.2f}, R²={r2_train:.2f}, MAE={mae_train:.2f}"},
+                    {"테스트 성능": f"RMSE={rmse_test:.2f}, R²={r2_test:.2f}, MAE={mae_test:.2f}"},
+                    {"과적합 여부": overfitting_status},
+                    {"실제값 리스트": combined_y_actual},   # 미래 구간 None 추가
+                    {"예측값 리스트": [int(val) for val in combined_y_pred]},  # 미래 예측 포함
+                    {"image_url": image_url},
+                    {"년-월": combined_months},  # 과거+미래 모두 포함
+                ]
+            }
+            final_results[rent_type].append(area_result)
+
+    # 병합
+    jeonse = extract_full(final_results, "전세")
+    wolse = extract_full(final_results, "월세")
+    merged = {}
+    for area in jeonse.keys():
+        merged[area] = {"jeonse": jeonse[area], "wolse": wolse[area]}
+
+    return merged
+
+
+
+
+
+
+def extract_full(data,category: str):
+    """
+    category: "전세" 또는 "월세"
+    """
+    # data = { ... } 
+    results = {}
+    for item in data[category]:
+        for size, details in item.items():
+            entry = {}
+            for d in details:
+         
+                if "훈련성능" in d:
+                    entry["훈련성능"] = d["훈련성능"]
+                if "테스트 성능" in d:
+                    entry["테스트 성능"] = d["테스트 성능"]
+                if "과적합 여부" in d:
+                    entry["과적합 여부"] = d["과적합 여부"]
+                if "실제값 리스트" in d:
+                    entry["실제값 리스트"] = d["실제값 리스트"]
+                if "예측값 리스트" in d:
+                    entry["예측값 리스트"] = d["예측값 리스트"]
+                if "년-월" in d:
+                    entry["년-월"] = d["년-월"]
+                if "image_url" in d:
+                    entry["image_url"] = d["image_url"]
+            results[size] = entry
+    return results
+
+# # 전세 / 월세 결과 추출
+# jeonse_results = extract_full("전세")
+# wolse_results = extract_full("월세")
+
+# # 출력
+# print(" 전세 결과")
+# for size, vals in jeonse_results.items():
+#     print(f"[{size}]")
+#     print("훈련성능:", vals["훈련성능"])
+#     print("테스트 성능:", vals["테스트 성능"])
+#     print("과적합 여부:", vals["과적합 여부"])
+#     print("실제값:", vals["실제값 리스트"])
+#     print("예측값:", vals["예측값 리스트"])
+#     print()
+
+# print(" 월세 결과")
+# for size, vals in wolse_results.items():
+#     print(f"[{size}]")
+#     print("훈련성능:", vals["훈련성능"])
+#     print("테스트 성능:", vals["테스트 성능"])
+#     print("과적합 여부:", vals["과적합 여부"])
+#     print("실제값:", vals["실제값 리스트"])
+#     print("예측값:", vals["예측값 리스트"])
+#     print()
+
 def engine(actionType):
     print(f" ACTION TYPE ====== {actionType}")
     if actionType == "1" :
@@ -736,6 +929,10 @@ def engine(actionType):
     elif actionType == "4" :
         return GBRegressor()
     else  :
-        #GradientBoostingRegressor
-        return allRegress()
+        # 1. RandomForestRegressor
+        # 2. LinearRegression
+        # 3. DecisionTreeRegressor
+        # 4. GradientBoostingRegressor
+        return performance_test(actionType)
+    
 
