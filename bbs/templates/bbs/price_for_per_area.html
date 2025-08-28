@@ -208,10 +208,10 @@
             <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p>
           </div>
         </div>
-        <p class="hint">백엔드 연동 시 <span class="kbd">/api/search?model=모델명</span> 과 같이 연결하면 됩니다. 예시 코드는 하단 참고.</p>
+        <!-- <p class="hint">백엔드 연동 시 <span class="kbd">/api/search?model=모델명</span> 과 같이 연결하면 됩니다. 예시 코드는 하단 참고.</p> -->
       </section>
 
-      <section class="card">
+      <!-- <section class="card">
         <h2 class="result-title">백엔드 연동 예시 (fetch)</h2>
         <pre class="mono" style="white-space:pre-wrap; word-break:break-all; background:#0b1323; border:1px solid var(--border); padding:12px; border-radius:12px;">
         fetch(`/api/search?model=${'{선택된_모델'}`})
@@ -219,10 +219,10 @@
           .then(data => renderResult(data))
           .catch(err => showError(err));
         </pre>
-      </section>
+      </section> -->
     </div>
     {% csrf_token %}
-    <div class="footer">© 2025 모델 조회 데모 · 단일 HTML 파일</div>
+    <!-- <div class="footer">© 2025 모델 조회 데모 · 단일 HTML 파일</div> -->
   </main>
 
   <script>
@@ -460,25 +460,6 @@
       }
     });
 
-
-      // ----------------------------
-    // 탭 이벤트 처리
-    // ----------------------------
-    // function activateTab(tab){
-    //   if(tab.classList.contains('active')) return; // 이미 활성화된 탭이면 차단
-    //   tabVolume.classList.remove('active');
-    //   tabPerf.classList.remove('active');
-    //   tab.classList.add('active');
-
-    //   if(tab.id === 'tabVolume'){
-    //     renderVolume();
-    //   } else {
-    //     renderResult({});
-    //   }
-    // }
-
-    // tabVolume.addEventListener('click', () => activateTab(tabVolume));
-    // tabPerf.addEventListener('click', () => activateTab(tabPerf));
 
     // ----------------------------
     // 조회 버튼 이벤트

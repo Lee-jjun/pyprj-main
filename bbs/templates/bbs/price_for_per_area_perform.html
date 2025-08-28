@@ -196,11 +196,10 @@
         
         <section>
           <!-- 주요로직 제목 오른쪽 배치 -->
-          <h1 class="result-title" style="display:flex; justify-content:flex-end; cursor:pointer;" id="toggleLogic">
+          <!-- <h1 class="result-title" style="display:flex; justify-content:flex-end; cursor:pointer;" id="toggleLogic">
             주요로직 ▼
           </h1>
 
-          <!-- 숨겨진 주요로직 영역 -->
           <div id="logicContent" style="display:none;">
             <pre class="mono" style="white-space:pre-wrap; word-break:break-all; background:#0b1323; border:1px solid var(--border); padding:12px; border-radius:12px;">
             fetch(`/api/search?model=${'{선택된_모델'}`})
@@ -209,7 +208,7 @@
               .catch(err => showError(err));
             </pre>
           </div>
-        </section>
+        </section> -->
         <!-- <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
           <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
             <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p>
@@ -223,11 +222,11 @@
           </div>
         </div>
 
-        <p class="hint">백엔드 연동 시 <span class="kbd">/api/search?model=모델명</span> 과 같이 연결하면 됩니다. 예시 코드는 하단 참고.</p>
+        <!-- <p class="hint">백엔드 연동 시 <span class="kbd">/api/search?model=모델명</span> 과 같이 연결하면 됩니다. 예시 코드는 하단 참고.</p> -->
       </section>
     </div>
     {% csrf_token %}
-    <div class="footer">© 2025 모델 조회 데모</div>
+    <!-- <div class="footer">© 2025 모델 조회 데모</div> -->
   </main>
 
   <script>
