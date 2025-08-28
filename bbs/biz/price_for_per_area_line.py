@@ -658,6 +658,11 @@ def allRegress():
 # 2. LinearRegression
 # 3. DecisionTreeRegressor
 # 4. GradientBoostingRegressor
+
+# 1. RandomForestRegressor
+# 2. LinearRegression
+# 3. DecisionTreeRegressor
+# 4. GradientBoostingRegressor
 def performance_test(testType):
     """
     회귀 모델을 사용하여 아파트 전월세 수요를 예측하고,
