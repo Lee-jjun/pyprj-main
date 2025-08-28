@@ -39,14 +39,24 @@
     }
 
     .title {
-        color: #ffffff;
-        text-align: center;
-        margin-bottom: 50px;
+        display: flex;
+        justify-content: center;   /* 가로 중앙 */
+        align-items: center;       /* 세로 중앙 */
+        flex-direction: column;    /* 세로 정렬 (여러 줄일 경우) */
+        width: 550px;
+        margin: 50px auto;         /* 화면 가운데 정렬 */
+        padding: 20px 30px;
+        color: #fff;
         font-size: 2.5rem;
-        font-weight: 700;
+        font-weight: bold;
         letter-spacing: -1px;
-        border-bottom: none;
-        padding-bottom: 15px;
+        text-align: center;        /* 텍스트 중앙 정렬 */
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
     }
 
     /* 셀 컨테이너 */
@@ -404,7 +414,7 @@
 
 
 <div class="notebook-container">
-    <h1 class="title">가격대별 전/월세 예측 페이지</h1>
+    <h1 class="title">금액대별 구별 수요량 예측 </h1>
     
     {% if result %}
         {{ result.prophet|json_script:"prophet_data" }}
