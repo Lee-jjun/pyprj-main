@@ -49,41 +49,6 @@
     button:hover { filter: brightness(1.05); }
     button:active { transform: translateY(1px); }
 
-
-       .tab-menu {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    /* .tab-button {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      background: #f5f5f5;
-      color: #333;
-      cursor: pointer;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-block;
-    } */
-    .tab-button {
-      padding: 8px 16px;
-      border-radius: 8px 8px 0 0;
-      background: var(--panel-2);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      cursor: pointer;
-      color: var(--text);
-      font-weight: 600;
-    }
-    .tab-button.active { background: var(--accent); color: #fff; }
-    /* .tab-button.active {
-      background: linear-gradient(135deg, #4a90e2, #357ab7);
-      border-color: transparent;
-      color: #fff;
-      pointer-events: none; 
-    } */
-
     main { padding: 16px; }
     .grid { max-width: 1080px; margin: 16px auto; display: grid; gap: 16px; }
     .card {
@@ -112,15 +77,25 @@
     .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
     .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px 0; }
   
-    /* 마우스가 이미지 위로 올라가면 이미지 사이즈를 키움*/
-    .zoom-img {
-      /* width: 200px; */
-      height: auto;
-      transition: transform 0.3s ease; /* 부드럽게 확대 */
+    /* 새로운 스타일 추가 */
+    .result-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
-    .zoom-img:hover {
-      transform: scale(1.2); /* 1.2배 확대 */
+    .result-section {
+        flex: 1;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .chart-section {
+        margin-top: 20px;
+        text-align: center;
+        width: 100%;
     }
 
     .card table {
@@ -133,33 +108,6 @@
         padding: 6px 10px;
         text-align: center;
     } 
- /* === 헤더 버튼 스타일 === */
-        .main-header {
-            text-align: center;
-            margin: 0;
-            padding: 20px 0;
-        }
-
-        .header-button {
-            display: inline-block;
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #fff;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
-            transition: transform 0.3s ease, background 0.3s ease;
-        }
-
-        .header-button:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.25);
-        }
-
 
   </style>
 </head>
@@ -174,36 +122,23 @@
             <option value="1">LinearRegression</option>
             <option value="2">Decision Tree Regression</option>
             <option value="4">Gradient Boosting Regression</option>
-            <!-- <option value="5">=전체=</option>   -->
-          </select>
+            <option value="5">======= default ======</option>
+            </select>
         </div>
         <div>
           <label class="invisible" style="opacity:0">조회</label><br/>
           <button id="searchBtn" type="button" aria-label="조회버튼">조회</button>
         </div>
       </div>
-
-      <div class="muted mono"> 
-        <header class="main-header">
-            <a href="/" class="header-button">
-                Ai-X APT 부동산 전/월세 예측 서비스
-            </a>
-        </header>
       </div>
-    </div>
   </header>
 
   <main>
     <div class="grid">
       <section class="card">
-          <!-- 상단 탭 버튼 -->
-        <div class="tab-menu">
-          <button class="tab-button active" id="tabVolume">10월거래량</button>
-          <button class="tab-button " id="tabPerf">성능테스터</button>
-        </div>
         <h1 class="heading">모델 조회 데모</h1>
         <p class="sub">상단에서 모델을 선택하고 <span class="kbd">조회</span>를 클릭하세요. 선택된 모델의 요약 정보와 예시 결과가 이 영역에 표시됩니다.</p>
-        <div id="resultArea" class="row" aria-live="polite" aria-busy="false">
+        <div id="resultArea" aria-live="polite" aria-busy="false">
           <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
             <p class="muted">아직 조회 전입니다. 원하는 항목을 선택한 후 <strong>조회</strong>를 누르세요.</p>
           </div>
@@ -212,12 +147,20 @@
       </section>
 
       <section class="card">
-        <h2 class="result-title">백엔드 연동 예시 (fetch)</h2>
+        <h2 class="result-title">Python 코드 예시</h2>
         <pre class="mono" style="white-space:pre-wrap; word-break:break-all; background:#0b1323; border:1px solid var(--border); padding:12px; border-radius:12px;">
-        fetch(`/api/search?model=${'{선택된_모델'}`})
-          .then(r => r.json())
-          .then(data => renderResult(data))
-          .catch(err => showError(err));
+from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
+
+# 모델 생성
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+# 가상 데이터로 학습
+# X_train, y_train은 실제 데이터셋으로 대체해야 합니다.
+# model.fit(X_train, y_train)
+
+# 예측 결과
+# predicted_values = model.predict(X_test)
         </pre>
       </section>
     </div>
@@ -259,8 +202,9 @@
       catch { return n; }
     }
 
+
     function renderTable(rows) {
-              const trs = rows.map(item => `
+      const trs = rows.map(item => `
         <tr>
             <td rowspan="3">${item.면적}</td>
             <td>RMSE</td>
@@ -274,43 +218,36 @@
             <td>MAE</td>
             <td>${item.MAE}</td>
         </tr>
-    `).join('');
+      `).join('');
 
-    return `
-    <table role="table" aria-label="모델 파라미터" style="width:100%; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th>면적</th>
-                <th>항목</th>
-                <th>값</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${trs}
-        </tbody>
-    </table>`;
+      return `
+        <table role="table" aria-label="모델 파라미터" style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>면적</th>
+                    <th>항목</th>
+                    <th>값</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${trs}
+            </tbody>
+        </table>`;
     }
 
-
-
-    function renderResult(jsonData,img) {
+    function renderResult(jsonData, img) {
         const modelSel = document.getElementById('modelSelect');
         const modelName = modelSel.options[modelSel.selectedIndex].text;
-        const info = MODEL_INFO[modelName]
-        // -----------------------
-        // 성능지표 변환
-        // -----------------------
-        const perf = jsonData.performance; 
+        const info = MODEL_INFO[modelName];
 
-     
+        const perf = jsonData.performance;
+        console.log(perf)
         const jeonseRows = perf["전세"].map(item => ({
             면적: item.면적,
             RMSE: item.RMSE,
             R2: item.R2,
             MAE: item.MAE
         }));
-
-        // 월세
         const wolseRows = perf["월세"].map(item => ({
             면적: item.면적,
             RMSE: item.RMSE,
@@ -318,39 +255,29 @@
             MAE: item.MAE
         }));
 
-        // 표 생성
         const jeonseTable = renderTable(jeonseRows);
         const wolseTable = renderTable(wolseRows);
         const imgUrl = img;
-        // 화면 렌더링
+
         resultArea.setAttribute('aria-busy', 'false');
         resultArea.innerHTML = `
-            <div class="card">
-              <div class="result-title">선택 모델: ${modelName}</div>
-              <p class="muted">${info.desc}</p>
-
-              <!-- 가로 Flex 컨테이너 -->
-              <div style="display: flex; gap: 20px; flex-wrap: nowrap;">
-                <div style="flex: 1; min-width: 500px;">
-                  <h3 class="sub">평가지표 (전세)</h3>
-                  ${jeonseTable}
+            <div class="result-container">
+                <div class="result-section">
+                    <h3 class="sub">평가지표 (전세)</h3>
+                    ${jeonseTable}
                 </div>
-                <div style="flex: 1; min-width: 500px;">
-                  <h3 class="sub">평가지표 (월세)</h3>
-                  ${wolseTable}
+                <div class="result-section">
+                    <h3 class="sub">평가지표 (월세)</h3>
+                    ${wolseTable}
                 </div>
-              </div>
-
-              <!-- 이미지 출력: 표 아래 -->
-              ${imgUrl ? `<div style="margin-top: 20px; text-align:center;">
-                <img src="data:image/png;base64,${imgUrl}" alt="모델 결과 이미지" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;" class="zoom-img">
-              </div>` : ''}
-
             </div>
+            
+            ${imgUrl ? `<div class="chart-section">
+                <h3 class="sub">차트 정보</h3>
+                <img src="${imgUrl}" alt="모델 결과 이미지" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">
+            </div>` : ''}
         `;
     }
-
-
 
     function showLoading(){
       resultArea.setAttribute('aria-busy', 'true');
@@ -383,19 +310,13 @@
         }
       };
 
-      // ----------------------
-      // predicted 변환 (배열 안에 배열)
-      // ----------------------
-      for (let type in data.predicted) { // 전세, 월세
+      for (let type in data.predicted) { 
         for (let size in data.predicted[type]) {
           result.predicted[type].push([size, data.predicted[type][size]]);
         }
       }
 
-      // ----------------------
-      // performance 변환 (배열 안에 객체)
-      // ----------------------
-      for (let type in data.performance) { // 전세, 월세
+      for (let type in data.performance) { 
         for (let size in data.performance[type]) {
           let perf = data.performance[type][size];
           result.performance[type].push({
@@ -413,25 +334,23 @@
 
     async function fetchModel(csrftoken) {
         try {
-            const modelSel   = document.getElementById('modelSelect');
-            // 서버 URL을 호출
+            const modelSel = document.getElementById('modelSelect');
             const response = await fetch('/pfpa/api/', {
-                method: "POST",                      // POST 요청
+                method: "POST", 
                 headers: {
-                    "Content-Type": "application/json",  // JSON 형식 명시
+                    "Content-Type": "application/json",
                     "X-CSRFToken": csrftoken
                 },
                 body: JSON.stringify({
                     TYPE : modelSel.value
-                })   // JS 객체 → JSON 문자열 변환
+                })
             });
 
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
-            // JSON 파싱
             const model = await response.json();
+            console.log(JSON.stringify)
             jsonData = extractData(model)
-            // 렌더링
             renderResult(jsonData,model.img);
 
         } catch (e) {
@@ -445,6 +364,7 @@
       showLoading();
 
       const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      console.log(csrftoken)
       try{
         await fetchModel(csrftoken)
       }catch(e){
@@ -459,49 +379,6 @@
         searchBtn.click();
       }
     });
-
-
-      // ----------------------------
-    // 탭 이벤트 처리
-    // ----------------------------
-    // function activateTab(tab){
-    //   if(tab.classList.contains('active')) return; // 이미 활성화된 탭이면 차단
-    //   tabVolume.classList.remove('active');
-    //   tabPerf.classList.remove('active');
-    //   tab.classList.add('active');
-
-    //   if(tab.id === 'tabVolume'){
-    //     renderVolume();
-    //   } else {
-    //     renderResult({});
-    //   }
-    // }
-
-    // tabVolume.addEventListener('click', () => activateTab(tabVolume));
-    // tabPerf.addEventListener('click', () => activateTab(tabPerf));
-
-    // ----------------------------
-    // 조회 버튼 이벤트
-    // ----------------------------
-    searchBtn.addEventListener('click', () => {
-      showLoading();
-      setTimeout(()=>renderResult({}), 1000); // demo
-    });
-
-
-      // 탭 버튼 이벤트 처리
-    document.getElementById("tabVolume").addEventListener("click", function () {
-      if (!this.classList.contains("active")) {
-        window.location.href = "{% url 'bbs:price_for_per_area_page' %}";  // 10월거래량 페이지
-      }
-    });
-
-    document.getElementById("tabPerf").addEventListener("click", function () {
-      if (!this.classList.contains("active")) {
-        window.location.href = "{% url 'bbs:price_for_per_area_test' %}"; // 성능테스터 페이지
-      }
-    });
-
   </script>
 </body>
 </html>
