@@ -4,7 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import base64
-
+import warnings
+warnings.filterwarnings("ignore")
 #파일 유틸리티 
 class FileUtils:
     
