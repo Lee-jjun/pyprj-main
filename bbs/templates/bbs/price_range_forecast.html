@@ -20,7 +20,7 @@
     }
     
     body {
-        background-image: url("{% static 'images/apt4.png' %}");
+        background-image: url("{% static 'images/apt7.jpg' %}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -55,7 +55,7 @@
         border: 1px solid var(--border-color);
         border-radius: 6px;
         margin-bottom: 30px;
-        overflow: hidden;
+        overflow: visible;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
@@ -71,7 +71,7 @@
         font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         font-size: 14px;
         line-height: 1.5;
-        overflow-x: auto;
+        /* overflow-x: auto; */
         border-left: 4px solid var(--accent-color);
     }
 
@@ -99,6 +99,7 @@
         gap: 30px;
         border-top: none;
         text-align: center;
+        overflow: visible;
     }
 
     .output-cell h3, .output-cell h4 {
@@ -114,8 +115,55 @@
         height: auto;
         border-radius: 6px;
         border: 1px solid #ddd;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        position: relative; /* z-index를 위해 필수 */
+        z-index: 1; /* 평상시 z-index */
+        /* transform-origin을 명시하여 확대 중심점 설정 */
+        transform-origin: center center;
     }
-    
+
+    .result-image:hover {
+        transform: scale(1.6); /* 확대 비율을 약간 줄여 테스트 */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 10; /* 호버 시 가장 앞으로 */
+    }
+
+    .result-image1 {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        position: relative; /* z-index를 위해 필수 */
+        z-index: 1; /* 평상시 z-index */
+        /* transform-origin을 명시하여 확대 중심점 설정 */
+        transform-origin: center center;
+    }
+
+    .result-image1:hover {
+        transform: scale(1.2); /* 확대 비율을 약간 줄여 테스트 */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 10; /* 호버 시 가장 앞으로 */
+    }
+   
+    .result-image2 {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        position: relative; /* z-index를 위해 필수 */
+        z-index: 1; /* 평상시 z-index */
+        /* transform-origin을 명시하여 확대 중심점 설정 */
+        transform-origin: center center;
+    }
+
+    .result-image2:hover {
+        transform: scale(1.0); /* 확대 비율을 약간 줄여 테스트 */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 10; /* 호버 시 가장 앞으로 */
+    }
+
     /* 테이블 컨테이너 스타일 */
     .table-container {
         width: 100%;
@@ -446,12 +494,12 @@ demand_wolse = df_wolse.groupby(['구', '금액대']).size().unstack(fill_value=
                         </div>
                     </div>
                     <h3>구별 수요량 분석 결과</h3>
-                    <a href="{{ result.images.0 }}" target="_blank">
+                    <a href="{{ result.images.0 }}" target="_blank">                     
                         <img src="{{ result.images.0 }}" alt="구별 수요량 히트맵" class="result-image">
                     </a>
                 </div>
             </div>
-
+        </div>
             <div class="cell">
                 <div class="code-cell">
                     <h3>구별 수요 패턴 군집화 (K-Means + PCA)</h3>
@@ -478,7 +526,7 @@ reduced_data = pca.fit_transform(scaled_demand)
                     <br>
                     <h3>구별 수요 패턴 군집화 결과</h3>
                     <a href="{{ result.images.1 }}" target="_blank">
-                        <img src="{{ result.images.1 }}" alt="구별 수요 패턴 군집화" class="result-image">
+                        <img src="{{ result.images.1 }}" alt="구별 수요 패턴 군집화" class="result-image1">
                     </a>
                 </div>
             </div>
@@ -572,7 +620,7 @@ for gu in gu_list:
                     
                     <div class="accuracy-graph-container" style="display: none;">
                         <h4 id="gu-name"></h4>
-                        <img id="prediction-graph" src="" alt="예측 그래프" class="result-image">
+                        <img id="prediction-graph" src="" alt="예측 그래프" class="result-image2">
                         <div id="accuracy-metrics" class="accuracy-list"></div>
                     </div>
 
@@ -642,6 +690,8 @@ for gu in gu_list:
         if (initialModelButton) {
             initialModelButton.classList.add('active');
         }
+
+        
 
         // 초기 '구' 버튼 활성화 및 데이터 표시
         if (selectedGu) {
