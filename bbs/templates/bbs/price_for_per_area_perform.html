@@ -94,7 +94,7 @@
     .main-header {
         text-align: center;
         margin: 0;
-        padding: 20px 0;
+        /* padding: 20px 0; */
     }
 
     .header-button {
@@ -108,12 +108,12 @@
         background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
-        transition: transform 0.3s ease, background 0.3s ease;
+        /* text-shadow: 2px 2px 6px rgba(0,0,0,0.6); */
+        /* transition: transform 0.3s ease, background 0.3s ease; */
     }
 
     .header-button:hover {
-        transform: scale(1.05);
+        /* transform: scale(1.05); */
         background: rgba(255, 255, 255, 0.25);
     }
 
@@ -174,7 +174,7 @@
       <div class="muted mono"> 
         <header class="main-header">
             <a href="/" class="header-button">
-                Ai-X APT 부동산 전/월세 예측 서비스
+                Ai-X APT 부동산 전/월세 수요량 예측 서비스
             </a>
         </header>
       </div>
@@ -370,17 +370,17 @@
 
 
 
-      // 주요로직 토글 기능
-    document.getElementById("toggleLogic").addEventListener("click", function(){
-      const logicContent = document.getElementById("logicContent");
-      if(logicContent.style.display === "none"){
-        logicContent.style.display = "block";
-        this.innerHTML = "주요로직 ▲"; // 열린 상태
-      } else {
-        logicContent.style.display = "none";
-        this.innerHTML = "주요로직 ▼"; // 닫힌 상태
-      }
-    });
+    //   // 주요로직 토글 기능
+    // document.getElementById("toggleLogic").addEventListener("click", function(){
+    //   const logicContent = document.getElementById("logicContent");
+    //   if(logicContent.style.display === "none"){
+    //     logicContent.style.display = "block";
+    //     this.innerHTML = "주요로직 ▲"; // 열린 상태
+    //   } else {
+    //     logicContent.style.display = "none";
+    //     this.innerHTML = "주요로직 ▼"; // 닫힌 상태
+    //   }
+    // });
   </script>
 </body>
 </html>

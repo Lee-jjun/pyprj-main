@@ -544,7 +544,7 @@ reduced_data = pca.fit_transform(scaled_demand)
             {% if result.prophet or result.linear_regression or result.random_forest %}
             <div class="cell">
                 <div class="code-cell">
-                    <h3>Prophet, linear_regression, random_forest 모델 예측 &amp; 정확도 평가</h3>
+                    <h3>Prophet, Linear Regression, Random Forest 모델 예측 &amp; 정확도 평가</h3>
                     <pre><code class="language-python">
 # 각 모델별 예측 및 정확도 지표 반환 로직
 # (Prophet, 선형 회귀, 랜덤 포레스트)
@@ -615,9 +615,9 @@ for gu in gu_list:
                 <div class="output-cell" style="gap: 50px;">
                     <h3>모델별 예측 결과 및 정확도 비교</h3>
                     <div class="model-button-container">
-                        <button class="gu-button model-button" data-model="prophet">Prophet</button>
-                        <button class="gu-button model-button" data-model="linear_regression">linear regression</button>
-                        <button class="gu-button model-button" data-model="random_forest">random forest</button>
+                        <button class="gu-button model-button" data-model="Prophet">Prophet</button>
+                        <button class="gu-button model-button" data-model="Linear Regression">Linear Regression</button>
+                        <button class="gu-button model-button" data-model="Random Forest">Random Forest</button>
                     </div>
 
                     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
