@@ -11,22 +11,131 @@ from bbs.utils.fonts import setup_matplotlib_fonts
 import traceback
 
 # LinearRegression(선형 회귀)
-def LRegression():
+def LRegression(testType):
 
     setup_matplotlib_fonts()
     ##################################################
     # 1. 데이터 불러오기 및 전처리
     ##################################################
+    # try:
+    #     df = FileUtils().getCsv("아파트(전월세)_실거래가_all.csv")
+    # except UnicodeDecodeError as un:
+    #     df = FileUtils().getCsv("아파트(전월세)_실거래가_all.csv")
+    # except FileNotFoundError as e:
+    #     print(f"파일을 찾을 수 없습니다: {e.filename}")
+
+    # # 데이터 전처리
+    # df['거래일'] = pd.to_datetime(df['계약년월'].astype(str) + df['계약일'].astype(str).str.zfill(2), format='%Y%m%d')
+
+    # bins = [0, 40, 60, 85, 100, 135, 200]
+    # labels = ['~40㎡', '40~60㎡', '60~85㎡', '85~100㎡', '100~135㎡', '135㎡~']
+    # df['면적_구간'] = pd.cut(df['전용면적(㎡)'], bins=bins, labels=labels, right=False)
+
+    # df['월'] = df['거래일'].dt.to_period('M')
+    # monthly_demand = df.groupby(['월', '전월세구분', '면적_구간']).size().reset_index(name='수요량')
+    # monthly_demand['월'] = monthly_demand['월'].dt.to_timestamp()
+
+    # # 'month_index' 생성
+    # monthly_demand_full = monthly_demand.groupby('월').size().reset_index()
+    # monthly_demand_full['month_index'] = np.arange(len(monthly_demand_full))
+    # monthly_demand = pd.merge(monthly_demand, monthly_demand_full[['월', 'month_index']], on='월', how='left')
+
+    # # 예측할 월 (2025-09, 2025-10 두 달) 설정
+    # predict_dates = pd.date_range(start='2025-09', end='2025-10', freq='MS')
+    # min_date = monthly_demand['월'].min()
+    # predict_date_indices = [(d.year - min_date.year) * 12 + (d.month - min_date.month) for d in predict_dates]
+
+    # print("--- 면적 구간별 LinearRegression 예측 결과 및 성능 지표 ---")
+
+    # predicted_results = {'전세': {}, '월세': {}}
+    # performance_metrics = {'전세': {}, '월세': {}}
+
+    # # 실제/예측 리스트 저장
+    # time_series_results = {'전세': {}, '월세': {}}
+
+    # for rent_type in ['전세', '월세']:
+    #     print(f"\n--- {rent_type} ---")
+    #     for area_label in labels:
+    #         subset_df = monthly_demand[(monthly_demand['전월세구분'] == rent_type) & (monthly_demand['면적_구간'] == area_label)].copy()
+
+    #         if len(subset_df) < 2:
+    #             print(f"  > {area_label} : 데이터 부족으로 예측 불가")
+    #             continue
+
+    #         X = subset_df[['month_index']]
+    #         y = subset_df['수요량']
+
+    #         model = LinearRegression()
+    #         model.fit(X, y)
+
+    #         # 두 달 예측 (2025-09, 2025-10)
+    #         predicted_future = model.predict(np.array(predict_date_indices).reshape(-1, 1))
+
+    #         # 과거 데이터 예측
+    #         y_pred = model.predict(X)
+
+    #         # === 길이 맞추기 ===
+    #         combined_y_pred = np.concatenate([y_pred, predicted_future])
+    #         combined_months = list(subset_df['월'].dt.strftime("%Y-%m")) + list(predict_dates.strftime("%Y-%m"))
+    #         combined_y_actual = list(y.astype(int)) + [None] * len(predict_dates)
+
+    #         # 성능 지표
+    #         rmse = np.sqrt(mean_squared_error(y, y_pred))
+    #         r2 = r2_score(y, y_pred)
+    #         mae = mean_absolute_error(y, y_pred)
+
+    #         # 결과 저장
+    #         predicted_results[rent_type][area_label] = {d.strftime("%Y-%m"): int(v) for d, v in zip(predict_dates, predicted_future)}
+    #           
+    #         time_series_results[rent_type][area_label] = {
+    #             "실제값 리스트": combined_y_actual,
+    #             "예측값 리스트": [int(val) for val in combined_y_pred],
+    #             "년-월": combined_months
+    #         }
+
+    #         print(f"  > {area_label} 예측: {predicted_results[rent_type][area_label]}")
+    #         print(f"  > {area_label} 성능 지표: RMSE={rmse:.2f}, R²={r2:.2f}, MAE={mae:.2f}")
+
+    # # --- 결과 시각화 (라인 차트로 변경) ---
+    # fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    # axes = axes.flatten()
+
+    # for i, area_label in enumerate(labels):
+    #     ax = axes[i]
+    #     for rent_type, color in zip(['전세', '월세'], ['blue', 'red']):
+    #         if area_label not in time_series_results[rent_type]:
+    #             continue
+    #         data = time_series_results[rent_type][area_label]
+    #         months = pd.to_datetime(data["년-월"])
+    #         actual = data["실제값 리스트"]
+    #         pred = data["예측값 리스트"]
+
+    #         ax.plot(months, pred, linestyle='--', marker='o', color=color, label=f"{rent_type} 예측")
+    #         ax.plot(months, actual, linestyle='-', marker='x', color=color, alpha=0.5, label=f"{rent_type} 실제")
+
+    #     ax.set_title(f"{area_label} 수요량 (2025-09~10 포함)")
+    #     ax.legend()
+    #     ax.grid(True)
+
+    # plt.tight_layout()
+   
+
+    # testType 조건 (5=RF, 6=Linear, 7=DecisionTree, 8=GBM)
+
     try:
         df = FileUtils().getCsv("아파트(전월세)_실거래가_all.csv")
-    except UnicodeDecodeError as un:
+    except UnicodeDecodeError:
         df = FileUtils().getCsv("아파트(전월세)_실거래가_all.csv")
     except FileNotFoundError as e:
         print(f"파일을 찾을 수 없습니다: {e.filename}")
 
-    # 데이터 전처리
-    df['거래일'] = pd.to_datetime(df['계약년월'].astype(str) + df['계약일'].astype(str).str.zfill(2), format='%Y%m%d')
+    # 날짜 생성
+    df['거래일'] = pd.to_datetime(
+        df['계약년월'].astype(str) + df['계약일'].astype(str).str.zfill(2),
+        format='%Y%m%d'
+    )
 
+    # 면적 구간
     bins = [0, 40, 60, 85, 100, 135, 200]
     labels = ['~40㎡', '40~60㎡', '60~85㎡', '85~100㎡', '100~135㎡', '135㎡~']
     df['면적_구간'] = pd.cut(df['전용면적(㎡)'], bins=bins, labels=labels, right=False)
@@ -38,65 +147,85 @@ def LRegression():
     # 'month_index' 생성
     monthly_demand_full = monthly_demand.groupby('월').size().reset_index()
     monthly_demand_full['month_index'] = np.arange(len(monthly_demand_full))
-    monthly_demand = pd.merge(monthly_demand, monthly_demand_full[['월', 'month_index']], on='월', how='left')
+    monthly_demand = pd.merge(
+        monthly_demand,
+        monthly_demand_full[['월', 'month_index']],
+        on='월',
+        how='left'
+    )
 
-    # 예측할 월 (2025-09, 2025-10 두 달) 설정
+    # 예측할 월 (2025-09, 2025-10 두 달)
     predict_dates = pd.date_range(start='2025-09', end='2025-10', freq='MS')
     min_date = monthly_demand['월'].min()
     predict_date_indices = [(d.year - min_date.year) * 12 + (d.month - min_date.month) for d in predict_dates]
 
-    print("--- 면적 구간별 LinearRegression 예측 결과 및 성능 지표 ---")
-
+    # --- 결과 저장용 2번 구조 그대로 유지 ---
     predicted_results = {'전세': {}, '월세': {}}
+    time_series_results = {'전세': {}, '월세': {}}
     performance_metrics = {'전세': {}, '월세': {}}
 
-    # 실제/예측 리스트 저장
-    time_series_results = {'전세': {}, '월세': {}}
-
     for rent_type in ['전세', '월세']:
-        print(f"\n--- {rent_type} ---")
         for area_label in labels:
-            subset_df = monthly_demand[(monthly_demand['전월세구분'] == rent_type) & (monthly_demand['면적_구간'] == area_label)].copy()
+            subset_df = monthly_demand[
+                (monthly_demand['전월세구분'] == rent_type) &
+                (monthly_demand['면적_구간'] == area_label)
+            ].copy()
 
-            if len(subset_df) < 2:
-                print(f"  > {area_label} : 데이터 부족으로 예측 불가")
+            if len(subset_df) < 2:  # 2번 소스 기준 최소 데이터 2
                 continue
 
             X = subset_df[['month_index']]
             y = subset_df['수요량']
 
-            model = LinearRegression()
-            model.fit(X, y)
 
-            # 두 달 예측 (2025-09, 2025-10)
-            predicted_future = model.predict(np.array(predict_date_indices).reshape(-1, 1))
+            # === 모델 선택 ===
+            if testType == "3":
+                model = RandomForestRegressor(random_state=42)
+            elif testType == "1":
+                model = LinearRegression()
+            elif testType == "2":
+                model = DecisionTreeRegressor(random_state=42)
+            elif testType == "4":
+                model = GradientBoostingRegressor(random_state=42)
+            else:
+                model = LinearRegression()
+
+            # 모델 학습
+            model.fit(X, y)
 
             # 과거 데이터 예측
             y_pred = model.predict(X)
 
-            # === 길이 맞추기 ===
+            # 미래 예측
+            predicted_future = model.predict(np.array(predict_date_indices).reshape(-1, 1))
+
+            # === 결과 데이터 구성 (2번 소스 형태 그대로) ===
             combined_y_pred = np.concatenate([y_pred, predicted_future])
             combined_months = list(subset_df['월'].dt.strftime("%Y-%m")) + list(predict_dates.strftime("%Y-%m"))
             combined_y_actual = list(y.astype(int)) + [None] * len(predict_dates)
 
-            # 성능 지표
-            rmse = np.sqrt(mean_squared_error(y, y_pred))
-            r2 = r2_score(y, y_pred)
-            mae = mean_absolute_error(y, y_pred)
+            predicted_results[rent_type][area_label] = {
+                d.strftime("%Y-%m"): int(v) for d, v in zip(predict_dates, predicted_future)
+            }
 
-            # 결과 저장
-            predicted_results[rent_type][area_label] = {d.strftime("%Y-%m"): int(v) for d, v in zip(predict_dates, predicted_future)}
-            performance_metrics[rent_type][area_label] = {'RMSE': f"{rmse:.2f}", 'R2': f"{r2:.2f}", 'MAE': f"{mae:.2f}"}
             time_series_results[rent_type][area_label] = {
                 "실제값 리스트": combined_y_actual,
                 "예측값 리스트": [int(val) for val in combined_y_pred],
                 "년-월": combined_months
             }
 
-            print(f"  > {area_label} 예측: {predicted_results[rent_type][area_label]}")
-            print(f"  > {area_label} 성능 지표: RMSE={rmse:.2f}, R²={r2:.2f}, MAE={mae:.2f}")
+            # 성능지표 (전체 데이터 기준)
+            rmse_full = np.sqrt(mean_squared_error(y, y_pred))
+            r2_full = r2_score(y, y_pred)
+            mae_full = mean_absolute_error(y, y_pred)
 
-    # --- 결과 시각화 (라인 차트로 변경) ---
+            performance_metrics[rent_type][area_label] = {
+                "RMSE": f"{rmse_full:.2f}",
+                "R2": f"{r2_full:.2f}",
+                "MAE": f"{mae_full:.2f}"
+            }
+
+    # --- 결과 시각화 ---
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
     axes = axes.flatten()
 
@@ -119,15 +248,17 @@ def LRegression():
 
     plt.tight_layout()
 
+
     # plt.show()
     filename = FileUtils().savePngToPath("linear-regression.png",closeFlag=True)
     # print(f"=== 생성된 이미지 파일 위치 {filename}")
     print(f"predicted_results {predicted_results}")
-
+    print(f"performance_metrics {performance_metrics}")
     return { "predicted":predicted_results
             ,"performance":performance_metrics
             ,"analysis":{}
             ,"img":filename}
+
 
 # Decision Tree Regression (결정 트리 회귀): 
 # 데이터를 특정 조건에 따라 나누는 '결정 트리' 구조를 사용하여 예측합니다.
@@ -257,6 +388,8 @@ def DTreeRegressor():
     plt.tight_layout()
 
     filename = FileUtils().savePngToPath("decision-tree-regressor.png",closeFlag=True)
+    print(f"predicted_results {predicted_results}")
+    print(f"performance_metrics {performance_metrics}")
     # plt.show()
     # return predicted_results ,performance_metrics
     return { "predicted":predicted_results
@@ -855,15 +988,18 @@ def engine(actionType):
     print(f" ACTION TYPE ====== {actionType}")
     if actionType == "1" :
         # LinearRegression(선형 회귀)
-        return LRegression()
+        return LRegression(actionType)
     elif actionType == "2" :  
         #DecisionTreeRegressor
-        return DTreeRegressor()
+        return LRegression(actionType)
+        # return DTreeRegressor()
     elif actionType == "3" :
+        return LRegression(actionType)
         #RandomForestRegressor
-        return RFRegressor()   
+        # return RFRegressor()   
     elif actionType == "4" :
-        return GBRegressor()
+        return LRegression(actionType)
+        # return GBRegressor()
     else  :
         # 1. RandomForestRegressor
         # 2. LinearRegression
