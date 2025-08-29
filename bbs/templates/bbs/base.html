@@ -69,35 +69,54 @@
             display: none;
         }
 
-        /* 아이콘 원형 회전 */
-
-        .spinner-circle {
+        /* 대관람차3 구조 */
+        .ferris-wheel {
             position: relative;
-            width: 200px; height: 200px;
-            animation: spin 8s linear infinite;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 20px;
         }
-        .spinner-circle .icon {
+
+        /* 중앙 텍스트 */
+        .center-text {
             position: absolute;
-            font-size: 2rem;
-        }
-        .spinner-circle .icon:nth-child(1) { top: 0; left: 50%; transform: translate(-50%, 0); }
-        .spinner-circle .icon:nth-child(2) { top: 25%; right: 0; transform: translate(0, -50%); }
-        .spinner-circle .icon:nth-child(3) { top: 75%; right: 0; transform: translate(0, -50%); }
-        .spinner-circle .icon:nth-child(4) { bottom: 0; left: 50%; transform: translate(-50%, 0); }
-        .spinner-circle .icon:nth-child(5) { top: 75%; left: 0; transform: translate(0, -50%); }
-        .spinner-circle .icon:nth-child(6) { top: 25%; left: 0; transform: translate(0, -50%); }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-        }
-
-        .loading-text {
             text-align: center;
             font-weight: bold;
             font-size: 1.8em;
             line-height: 1.4;
+            z-index: 2;
+        }
+
+        /* 아이콘 궤도 */
+        .circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: spin 10s linear infinite;
+        }
+
+        .icon {
+            position: absolute;
+            font-size: 2rem;
+        }
+
+        /* 원 둘레에 아이콘 8개 배치 */
+        .icon:nth-child(1) { top: 0; left: 50%; transform: translate(-50%, 0); }
+        .icon:nth-child(2) { top: 15%; left: 85%; transform: translate(-50%, -50%); }
+        .icon:nth-child(3) { top: 50%; left: 100%; transform: translate(-50%, -50%); }
+        .icon:nth-child(4) { top: 85%; left: 85%; transform: translate(-50%, -50%); }
+        .icon:nth-child(5) { top: 100%; left: 50%; transform: translate(-50%, -100%); }
+        .icon:nth-child(6) { top: 85%; left: 15%; transform: translate(-50%, -50%); }
+        .icon:nth-child(7) { top: 50%; left: 0%; transform: translate(0, -50%); }
+        .icon:nth-child(8) { top: 15%; left: 15%; transform: translate(-50%, -50%); }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
         }
 
         /* === 풋터 스타일 === */
@@ -119,17 +138,20 @@
 <body>
     <!-- 1. 로딩 화면 -->
     <div id="loading-screen" class="hidden">
-        <div class="spinner-circle">
-            <span class="icon">🏠</span>
-            <span class="icon">🏠</span>
-            <span class="icon">🏠</span>
-            <span class="icon">🏠</span>
-            <span class="icon">🏠</span>
-            <span class="icon">🏠</span>
-        </div>
-        <div class="loading-text">
-            <span>집주인과</span><br>
-            <span>협상중</span>
+        <div class="ferris-wheel">
+            <div class="center-text">
+                집주인과<br>협상중
+            </div>
+            <div class="circle">
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+            </div>
         </div>
     </div>
 
