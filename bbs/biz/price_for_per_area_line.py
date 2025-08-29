@@ -794,6 +794,10 @@ def performance_test(testType):
     return merged
 
 
+
+
+
+
 def extract_full(data,category: str):
     """
     category: "전세" 또는 "월세"

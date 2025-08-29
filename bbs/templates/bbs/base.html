@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ai-X APT | 부동산 전월세 가격 예측 서비스">
     <meta name="author" content="Ai-X APT Team">
-    <title>{% block title %}Ai-X APT 부동산 예측 서비스{% endblock %}</title>
+    <title>{% block title %}Ai-X APT 부동산 전월세별 수요량 예측 서비스{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'bbs/css/style.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
@@ -14,19 +14,24 @@
     <style>
         /* === 헤더 버튼 스타일 === */
         .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            border-bottom: none;
             text-align: center;
-            margin: 0;
-            padding: 20px 0;
+            padding: 25px 0;
+            z-index: 1000;
         }
 
         .header-button {
             display: inline-block;
-            font-size: 2.2em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #fff;
             text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 12px;
+            padding: 18px 40px;
+            border-radius: 10px;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -34,9 +39,16 @@
             transition: transform 0.3s ease, background 0.3s ease;
         }
 
-        .header-button:hover {
+        .header-button:hover,
+        .page-title:hover {
             transform: scale(1.05);
             background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+        }
+
+        main {
+            margin-top: 120px;
+            margin-bottom: 100px; /* footer와 겹치지 않게 */
         }
 
         /* === 로딩 화면 스타일 === */
@@ -46,9 +58,9 @@
             width: 100%; height: 100%;
             background: rgba(0,0,0,0.6);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             font-size: 1.5em;
             color: #fff;
             z-index: 9999;
@@ -56,45 +68,102 @@
         #loading-screen.hidden {
             display: none;
         }
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(255,255,255,0.3);
-            border-top: 6px solid #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+
+        /* 대관람차4 구조 */
+        .ferris-wheel {
+            width: 480px;
+            height: 480px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 20px;
         }
+
+        /* 중앙 텍스트 */
+        .center-text {
+            position: absolute;
+            text-align: center;
+            font-weight: bold;
+            font-size: 3em;
+            line-height: 1.4;
+            z-index: 2;
+            color: #fff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;  /* 네온 효과 */
+        }
+
+        /* 아이콘 궤도 */
+        .circle {
+            position: absolute;
+            width: 170%;
+            height: 170%;
+            border-radius: 50%;
+            animation: spin 10s linear infinite;
+        }
+
+        .icon {
+            position: absolute;
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 0 0 8px #ff00ff, 0 0 16px #ff00ff;  /* 네온 효과 */
+        }
+
+        /* 원 둘레에 아이콘 8개 배치 */
+        .icon:nth-child(1) { top: 0; left: 50%; transform: translate(-50%, 0); }
+        .icon:nth-child(2) { top: 15%; left: 85%; transform: translate(-50%, -50%); }
+        .icon:nth-child(3) { top: 50%; left: 100%; transform: translate(-50%, -50%); }
+        .icon:nth-child(4) { top: 85%; left: 85%; transform: translate(-50%, -50%); }
+        .icon:nth-child(5) { top: 100%; left: 50%; transform: translate(-50%, -100%); }
+        .icon:nth-child(6) { top: 85%; left: 15%; transform: translate(-50%, -50%); }
+        .icon:nth-child(7) { top: 50%; left: 0%; transform: translate(0, -50%); }
+        .icon:nth-child(8) { top: 15%; left: 15%; transform: translate(-50%, -50%); }
+
         @keyframes spin {
-            100% { transform: rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
         }
 
         /* === 풋터 스타일 === */
         footer {
             position: fixed;
-            bottom: 20px;
+            bottom: 0;
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 1.5em;        
+            font-size: 2.5em;        
             font-weight: bold;
             color: #ffffff;           
             text-shadow: 1px 1px 4px rgba(0,0,0,0.7); 
+            padding: 20px 0;
+            background: #222;
         }
     </style>
 </head>
 <body>
     <!-- 1. 로딩 화면 -->
     <div id="loading-screen" class="hidden">
-        <div class="loading-spinner"></div>
-        <p>예측중</p>
+        <div class="ferris-wheel">
+            <div class="center-text">
+                집주인과<br>협상중
+            </div>
+            <div class="circle">
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+                <span class="icon">🏠</span>
+            </div>
+        </div>
     </div>
 
     <div class="content-wrapper">
         <header class="main-header">
             {% block header %}
                 <a href="{% url 'bbs:index' %}" class="header-button">
-                    Ai-X APT 부동산 전/월세 예측 서비스
+                    Ai-X APT 부동산 전/월세별 수요량 예측 서비스
                 </a>
             {% endblock %}
         </header>
@@ -112,29 +181,18 @@
 
     <!-- 3. 로딩 화면 제어 JS -->
     <script>
-        // 단순 로딩 표시
         function showLoading() {
             const screen = document.getElementById('loading-screen');
-            if (screen) {
-                screen.classList.remove('hidden');
-            }
+            if (screen) screen.classList.remove('hidden');
         }
         function hideLoading() {
             const screen = document.getElementById('loading-screen');
-            if (screen) {
-                screen.classList.add('hidden');
-            }
+            if (screen) screen.classList.add('hidden');
         }
-
-        // 로딩 표시 후 페이지 이동
         function showLoadingAndRedirect(url) {
             showLoading();
-            setTimeout(() => {
-                window.location.href = url;
-            }, 50);
+            setTimeout(() => { window.location.href = url; }, 50);
         }
-
-        // 뒤로가기/앞으로가기 시 로딩 화면 강제 숨김
         window.addEventListener("pageshow", function(event) {
             hideLoading();
         });
