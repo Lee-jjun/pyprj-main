@@ -137,7 +137,7 @@
         .main-header {
             text-align: center;
             margin: 0;
-            padding: 20px 0;
+            /* padding: 20px 0; */
         }
 
         .header-button {
@@ -186,7 +186,7 @@
       <div class="muted mono"> 
         <header class="main-header">
             <a href="/" class="header-button">
-                Ai-X APT 부동산 전/월세 예측 서비스
+                Ai-X APT 부동산 전/월세 수요량 예측 서비스
             </a>
         </header>
       </div>
@@ -460,15 +460,24 @@
       }
     });
 
-
+      // ----------------------------
+    // 탭 이벤트 처리
     // ----------------------------
-    // 조회 버튼 이벤트
-    // ----------------------------
-    searchBtn.addEventListener('click', () => {
-      showLoading();
-      setTimeout(()=>renderResult({}), 1000); // demo
-    });
+    // function activateTab(tab){
+    //   if(tab.classList.contains('active')) return; // 이미 활성화된 탭이면 차단
+    //   tabVolume.classList.remove('active');
+    //   tabPerf.classList.remove('active');
+    //   tab.classList.add('active');
 
+    //   if(tab.id === 'tabVolume'){
+    //     renderVolume();
+    //   } else {
+    //     renderResult({});
+    //   }
+    // }
+
+    // tabVolume.addEventListener('click', () => activateTab(tabVolume));
+    // tabPerf.addEventListener('click', () => activateTab(tabPerf));
 
       // 탭 버튼 이벤트 처리
     document.getElementById("tabVolume").addEventListener("click", function () {

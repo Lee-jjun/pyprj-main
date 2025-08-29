@@ -99,7 +99,7 @@ def run_analysis():
     
         for i, gu in enumerate(demand_by_gu.index):
             plt.text(reduced_data[i, 0] + 0.05, reduced_data[i, 1], gu)
-            print(gu)
+         
 
         
         plt.tight_layout()
@@ -110,7 +110,7 @@ def run_analysis():
         result_dict['images'].append(f'data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}')
         result_dict['cluster_html'] = demand_by_gu[['cluster']].to_html(classes=['accuracy-table'])
     
-        print(result_dict['cluster_html'])
+        
 
         # 8. Prophet, 선형 회귀, 랜덤 포레스트 모델을 사용한 시계열 예측
         time_series_data = df.groupby(['계약년월', '구']).size().reset_index(name='거래건수')
